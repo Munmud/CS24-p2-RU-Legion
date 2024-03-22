@@ -3,6 +3,8 @@ version: "3"
 services:
   broker:
     image: "rabbitmq:alpine"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
 
   #   result:
   #     image: "redis:alpine"
@@ -15,9 +17,12 @@ services:
       - POSTGRES_DB=app
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=supersecreatpassword
+    volumes:
+      - db_data:/var/lib/postgresql/data
 
   app:
     build: ./app
+    image: code-samurai-backend
     ports:
       - "8000:8000"
     volumes:
@@ -36,7 +41,7 @@ services:
 
   celery:
     build: ./app
-    image: munmud-celery-worker
+    image: code-samurai-celery-worker
     command: celery -A app worker -l INFO
     # volumes:
     # - ./:/home/user/app/
@@ -47,10 +52,19 @@ services:
 
   frontend:
     build: ./frontend
+    image: code-samurai-react
     volumes:
       - ./frontend:/usr/src/app
-      - /usr/src/app/node_modules
+      - node_modules:/usr/src/app/node_modules
     ports:
       - "5173:5173"
     depends_on:
       - db
+
+volumes:
+  rabbitmq_data:
+    name: code_samurai_rabbitmq_data
+  node_modules:
+    name: code_samurai_node_modules
+  db_data:
+    name: code_samurai_db_data
