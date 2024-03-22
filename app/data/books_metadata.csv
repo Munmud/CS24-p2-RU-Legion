@@ -1,0 +1,21 @@
+id,title,author,genre,price
+1,The Alchemist,Paulo Coelho,Fiction,19.99
+2,To Kill a Mockingbird,Harper Lee,Classics,15.95
+3,1984,George Orwell,Dystopian,12.50
+4,The Great Gatsby,F. Scott Fitzgerald,Classics,18.75
+5,Pride and Prejudice,Jane Austen,Romance,14.99
+6,The Hobbit,J.R.R. Tolkien,Fantasy,22.50
+7,Harry Potter and the Sorcerer's Stone,J.K. Rowling,Fantasy,25.99
+8,The Catcher in the Rye,J.D. Salinger,Fiction,16.80
+9,Lord of the Flies,William Golding,Adventure,14.25
+10,Brave New World,Aldous Huxley,Dystopian,20.45
+11,The Shining,Stephen King,Horror,19.25
+12,Moby-Dick,Herman Melville,Adventure,17.60
+13,Lady Susan,Jane Austen,Fiction,24.99
+14,The Odyssey,Homer,Epic Poetry,13.90
+15,The Road,Cormac McCarthy,Post-Apocalyptic,21.30
+16,Sapiens: A Brief History of Humankind,Yuval Noah Harari,Non-Fiction,24.99
+17,Austenland,Jane Austen,Fiction,8.50
+18,The Girl with the Dragon Tattoo,Stieg Larsson,Thriller,16.75
+19,Frankenstein,Mary Shelley,Gothic,15.75
+20,Emma,Jane Austen,Novel,13.95

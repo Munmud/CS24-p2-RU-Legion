@@ -1,0 +1,56 @@
+version: "3"
+
+services:
+  broker:
+    image: "rabbitmq:alpine"
+
+  #   result:
+  #     image: "redis:alpine"
+  #     ports:
+  #       - "6379:6379"
+
+  db:
+    image: postgres:14-alpine
+    environment:
+      - POSTGRES_DB=app
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=supersecreatpassword
+
+  app:
+    build: ./app
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/app
+    command: >
+      sh -c "python manage.py wait_for_db &&
+              python manage.py migrate &&
+              python manage.py runserver 0.0.0.0:8000"
+    environment:
+      - DB_HOST=db
+      - DB_NAME=app
+      - DB_USER=postgres
+      - DB_PASS=supersecreatpassword
+    depends_on:
+      - db
+
+  celery:
+    build: ./app
+    image: munmud-celery-worker
+    command: celery -A app worker -l INFO
+    # volumes:
+    # - ./:/home/user/app/
+    # env_file: backend/.env
+    depends_on:
+      - db
+      - broker
+
+  frontend:
+    build: ./frontend
+    volumes:
+      - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - "5173:5173"
+    depends_on:
+      - db
