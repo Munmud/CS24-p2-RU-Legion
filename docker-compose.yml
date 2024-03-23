@@ -5,12 +5,6 @@ services:
     image: "rabbitmq:alpine"
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
-
-  #   result:
-  #     image: "redis:alpine"
-  #     ports:
-  #       - "6379:6379"
-
   db:
     image: postgres:14-alpine
     environment:
@@ -19,7 +13,6 @@ services:
       - POSTGRES_PASSWORD=supersecreatpassword
     volumes:
       - db_data:/var/lib/postgresql/data
-
   app:
     build: ./app
     image: code-samurai-backend
@@ -38,7 +31,6 @@ services:
       - DB_PASS=supersecreatpassword
     depends_on:
       - db
-
   celery:
     build: ./app
     image: code-samurai-celery-worker
@@ -49,22 +41,22 @@ services:
     depends_on:
       - db
       - broker
-
-  frontend:
-    build: ./frontend
-    image: code-samurai-react
-    volumes:
-      - ./frontend:/usr/src/app
-      - node_modules:/usr/src/app/node_modules
-    ports:
-      - "3000:5173"
-    depends_on:
-      - db
+  # frontend:
+  #   build: ./frontend
+  #   image: code-samurai-react
+  #   volumes:
+  #     - ./frontend:/usr/src/app
+  #     - node_modules:/usr/src/app/node_modules
+  #   ports:
+  #     - "3000:5173"
+  #   depends_on:
+  #     - db
+  #     - app
 
 volumes:
   rabbitmq_data:
     name: code_samurai_rabbitmq_data
-  node_modules:
-    name: code_samurai_node_modules
   db_data:
     name: code_samurai_db_data
+  # node_modules:
+  #   name: code_samurai_node_modules
