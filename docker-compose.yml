@@ -1,10 +1,6 @@
 version: "3"
 
 services:
-  broker:
-    image: "rabbitmq:alpine"
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
   db:
     image: postgres:14-alpine
     environment:
@@ -31,16 +27,20 @@ services:
       - DB_PASS=supersecreatpassword
     depends_on:
       - db
-  celery:
-    build: ./app
-    image: code-samurai-celery-worker
-    command: celery -A app worker -l INFO
-    # volumes:
-    # - ./:/home/user/app/
-    # env_file: backend/.env
-    depends_on:
-      - db
-      - broker
+  # broker:
+  #   image: "rabbitmq:alpine"
+  #   volumes:
+  #     - rabbitmq_data:/var/lib/rabbitmq
+  # celery:
+  #   build: ./app
+  #   image: code-samurai-celery-worker
+  #   command: celery -A app worker -l INFO
+  #   # volumes:
+  #   # - ./:/home/user/app/
+  #   # env_file: backend/.env
+  #   depends_on:
+  #     - db
+  #     - broker
   # frontend:
   #   build: ./frontend
   #   image: code-samurai-react

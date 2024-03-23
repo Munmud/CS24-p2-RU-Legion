@@ -4,6 +4,7 @@ from django.core.management.base import BaseCommand
 # from django.contrib.auth.models import User
 from core.models import User
 
+
 class Command(BaseCommand):
     help = 'Creates a superuser'
 
@@ -14,9 +15,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         # username = kwargs['username']
-        email = 'm@gmail.com'
+        email = 'admin@gmail.com'
         password = 'pass'
 
         user = User.objects.create_superuser(email=email, password=password)
 
-        self.stdout.write(self.style.SUCCESS(f'Superuser {email} created successfully.'))
+        self.stdout.write(self.style.SUCCESS(
+            f'Superuser created successfully.\n\temail: {email}\n\t pass: {password}'))

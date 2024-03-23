@@ -29,6 +29,7 @@ The API will then be available at [http://127.0.0.1:8000](http://127.0.0.1:8000)
 ### Load Initial Data
 
 - `docker-compose run --rm app sh -c "python manage.py load_initial_books"`
+- `docker-compose run --rm app sh -c "python manage.py create_initial_groups"`
 - `docker-compose run --rm app sh -c "python manage.py generate_initial_super_user"`
 
 ### Create Project
