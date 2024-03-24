@@ -1,4 +1,5 @@
 {% load static %}
+{% load poll_extras %}
 <!DOCTYPE html>
 <html>
 
@@ -140,12 +141,15 @@
 
                 <div style="position: relative; display: inline-block; padding-top: 5px; padding-left: 15px;">
                   {% if user.is_authenticated %}
-                    <li>
+                  <li>
+                    {% if request.user|has_group:"System Admin" %} 
+                    <button type="button" class="btn btn-light" onclick="window.location.href='{% url 'register' %}'">Create New User</button>
+                    {% endif %}
+
                       <button type="button" class="btn btn-light" onclick="window.location.href='{% url 'logout' %}'">Logout</button>
                     </li>
                     {% else %}
                     <li>
-                      <button type="button" class="btn btn-light" onclick="window.location.href='{% url 'register' %}'">Register</button>
                       <button type="button" class="btn btn-light" onclick="window.location.href='{% url 'login' %}'">Login</button>
                     </li>
                   {% endif %}

@@ -2,14 +2,21 @@
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
-
 from django.contrib.auth.models import User
+
+USER_USER1 = 'user1'
+USER_USER2 = 'user2'
+USER_ADMIN = 'admin'
+PASSWORD = 'pass'
+GROUP_SYSTEM_ADMIN = 'System Admin'
+GROUP_STS_MANAGER = 'STS Manager'
+GROUP_LANDFILL_MANAGER = 'Landfill Manager'
 
 
 def create_general_users(self):
     users_data = [
-        {'username': 'user1', 'password': 'pass'},
-        {'username': 'user2', 'password': 'pass'},
+        {'username': USER_USER1, 'password': PASSWORD},
+        {'username': USER_USER2, 'password': PASSWORD},
     ]
     for data in users_data:
         username = data['username']
@@ -24,8 +31,8 @@ def create_general_users(self):
 
 
 def create_super_user(self):
-    username = 'admin'
-    password = 'pass'
+    username = USER_ADMIN
+    password = PASSWORD
 
     if not User.objects.filter(username=username).exists():
         User.objects.create_superuser(username=username, password=password)
@@ -38,9 +45,9 @@ def create_super_user(self):
 
 def create_groups(self):
     group_names = [
-        'System Admin',
-        'STS Manager',
-        'Landfill Manager'
+        GROUP_SYSTEM_ADMIN,
+        GROUP_STS_MANAGER,
+        GROUP_LANDFILL_MANAGER
     ]
     for group in group_names:
         if not Group.objects.filter(name=group).exists():
@@ -52,6 +59,12 @@ def create_groups(self):
                 f'Group : {group} already exists. Skipping...'))
 
 
+def add_user1_to_system_admin_group(self):
+    librarian_user = User.objects.get(username=USER_USER1)
+    system_admin_group = Group.objects.get(name=GROUP_SYSTEM_ADMIN)
+    librarian_user.groups.add(system_admin_group)
+
+
 class Command(BaseCommand):
     help = 'Creates a superuser'
 
@@ -59,3 +72,4 @@ class Command(BaseCommand):
         create_general_users(self)
         create_super_user(self)
         create_groups(self)
+        add_user1_to_system_admin_group(self)
