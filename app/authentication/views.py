@@ -19,7 +19,7 @@ def register(request):
             return redirect('dashboard')
     else:
         form = UserCreationForm()
-    return render(request, 'register.html', {'form': form})
+    return render(request, 'common/register.html', {'form': form})
 
 
 def user_login(request):
@@ -35,7 +35,7 @@ def user_login(request):
         return redirect('dashboard')
     else:
         form = AuthenticationForm()
-    return render(request, 'login.html', {'form': form})
+    return render(request, 'common/login.html', {'form': form})
 
 
 def user_logout(request):

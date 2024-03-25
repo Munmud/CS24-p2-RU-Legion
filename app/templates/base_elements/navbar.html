@@ -1,0 +1,30 @@
+{% load poll_extras %} {% load static %}
+<div class="sidebar-wrapper" id="sidebar-wrapper">
+  <ul class="nav">
+    <li class="active">
+      <a href="{% url 'dashboard' %}">
+        <i class="now-ui-icons design_app"></i>
+        <p>Dashboard</p>
+      </a>
+
+      {% if user.is_authenticated %}
+        {% if request.user|has_group:'System Admin' %}
+          <a href="{% url 'register' %}" style="margin-top: 10px;">
+            <i class="now-ui-icons users_single-02"></i>
+            <p>Create New User</p>
+          </a>
+        {% endif %}
+
+        <a href="{% url 'logout' %}" style="margin-top: 10px;">
+          <i class="now-ui-icons media-1_button-power"></i>
+          <p>Logout</p>
+        </a>
+      {% else %}
+        <a href="{% url 'logout' %}" style="margin-top: 10px;">
+          <i class="now-ui-icons users_single-02"></i>
+          <p>Login</p>
+        </a>
+      {% endif %}
+    </li>
+  </ul>
+</div>

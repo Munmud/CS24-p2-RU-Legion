@@ -12,4 +12,4 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 @login_required()
 def dashboard(request):
-    return render(request, 'dashboard.html', {})
+    return render(request, 'common/dashboard.html', {})
