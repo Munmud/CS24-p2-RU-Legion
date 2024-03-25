@@ -4,6 +4,7 @@ from django.conf import settings
 import re
 
 STS_METADATA_CSV = os.path.join(settings.DATA_DIR, "sts.csv")
+VEHICLE_METADATA_CSV = os.path.join(settings.DATA_DIR, "vehicle.csv")
 
 
 def is_system_admin(user):
@@ -42,4 +43,21 @@ def load_sts():
                 'Longitude':  Longitude,
             }
             dataset.append(data)
+    return dataset
+
+
+def load_vehicle():
+    dataset = []
+    with open(VEHICLE_METADATA_CSV, newline='', encoding="utf8") as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            # print(row)
+            data = {
+                'vehicle_number': row.get("vehicle_number"),
+                'type': row.get("type"),
+                'capacity': int(row.get("capacity")),
+            }
+            dataset.append(data)
+            # print(data)
+            # break
     return dataset
