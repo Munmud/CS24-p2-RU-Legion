@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     # 'rest_framework',
     'django_celery_results',
     'authentication',
+    'waste',
 ]
 
 MIDDLEWARE = [
