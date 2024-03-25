@@ -37,6 +37,17 @@
             </button>
           </div>
         </nav>
+
+        
+        {% if messages %}
+        <div class="" role="alert">
+        <ul class="messages list-group list-group-flush bg-dark">
+            {% for message in messages %}
+                <li{% if message.tags %} class="list-group-item {{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
         
         {% block content %}
 
@@ -52,7 +63,7 @@
     <script src="{% static 'assets\js\plugins\perfect-scrollbar.jquery.min.js' %}"></script>
     <!-- Google Maps Plugin -->
     <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.43.3/maps/maps-web.min.js"></script>
-    <script type="text/javascript" src="../assets/js/mobile-or-tablet.js"></script>
+    <script type="text/javascript" src="{% static 'assets/js/mobile-or-tablet.js' %}""></script>
     <script>
       // Define your product name and version.
       tt.setProductInfo("<your-product-name>", "<your-product-version>");
@@ -62,8 +73,8 @@
         container: "map",
         style: "tomtom://vector/1/basic-main",
 
-        center: [80.210066, 13.06616],
-        zoom: 9
+        center: [90.433900, 23.828800],
+        zoom: 8
       });
       map.addControl(new tt.FullscreenControl());
       map.addControl(new tt.NavigationControl());
@@ -96,8 +107,8 @@
           .setPopup(popup)
           .addTo(map);
       }
-      {% for gar in garbage %}
-      createMarker('accident.colors-white.jpg', [{{ gar.location }}], '#c31a26', '{{ gar.location }}');
+      {% for sts in sts_list %}
+      createMarker('accident.colors-white.jpg', [{{ sts.longitude }},{{ sts.latitude }} ], '#c31a26', '{{ gar.location }}');
       {% endfor %}
     </script>
     <!-- Chart JS -->

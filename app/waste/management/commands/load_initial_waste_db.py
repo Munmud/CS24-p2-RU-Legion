@@ -24,6 +24,6 @@ class Command(BaseCommand):
         Landfill.objects.create(
             address="Amin Bazar",
             capacity=3500,
-            latitude=23.798089,
-            longitude=90.299923,
+            latitude=23.79795912830887,
+            longitude=90.30016736544847,
         )

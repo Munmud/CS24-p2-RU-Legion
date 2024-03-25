@@ -1,4 +1,5 @@
-{% extends 'base.html' %} {% block content %}
+{% extends 'base.html' %}
+{% block content %}
 <div class="panel-header panel-header-lg">
   <canvas id="bigDashboardChart"></canvas>
 </div>
@@ -86,34 +87,27 @@
               </thead>
               <tbody>
                 {% for gar in garbage %}
-                <tr>
-                  <td>
-                    <a href="{{ gar.image_url }}">{{ gar.image_url }}</a>
-                  </td>
-                  <td>{{ gar.location }}</td>
-                  <td>{{ gar.datetime }}</td>
-                  <td>
-                    {% if gar.status %}
-                    <span class="badge badge-success">Completed</span>
-                    {% else %}
-                    <span class="badge badge-warning">Pending</span>
-                    {% endif %}
-                  </td>
-                  <td class="text-right">
-                    <form action="status1" method="POST">
-                      {% csrf_token %}
-                      <input
-                        name="submit1"
-                        value="{{ gar.image_url }}"
-                        type="text"
-                        hidden
-                      />
-                      <button type="submit" class="btn btn-success">
-                        Complete
-                      </button>
-                    </form>
-                  </td>
-                </tr>
+                  <tr>
+                    <td>
+                      <a href="{{ gar.image_url }}">{{ gar.image_url }}</a>
+                    </td>
+                    <td>{{ gar.location }}</td>
+                    <td>{{ gar.datetime }}</td>
+                    <td>
+                      {% if gar.status %}
+                        <span class="badge badge-success">Completed</span>
+                      {% else %}
+                        <span class="badge badge-warning">Pending</span>
+                      {% endif %}
+                    </td>
+                    <td class="text-right">
+                      <form action="status1" method="POST">
+                        {% csrf_token %}
+                        <input name="submit1" value="{{ gar.image_url }}" type="text" hidden />
+                        <button type="submit" class="btn btn-success">Complete</button>
+                      </form>
+                    </td>
+                  </tr>
                 {% endfor %}
               </tbody>
             </table>
@@ -142,36 +136,27 @@
               </thead>
               <tbody>
                 {% for pot in potholes %}
-                <tr>
-                  <td>
-                    <a class="imglink" href="{{ pot.image_url }}"
-                      >{{ pot.image_url }}</a
-                    >
-                  </td>
-                  <td>{{ pot.location }}</td>
-                  <td>{{ pot.datetime }}</td>
-                  <td>
-                    {% if pot.status %}
-                    <span class="badge badge-success">Completed</span>
-                    {% else %}
-                    <span class="badge badge-warning">Pending</span>
-                    {% endif %}
-                  </td>
-                  <td>
-                    <form action="status2" method="POST">
-                      {% csrf_token %}
-                      <input
-                        name="submit2"
-                        value="{{ pot.image_url }}"
-                        type="text"
-                        hidden
-                      />
-                      <button type="submit" class="btn btn-success">
-                        Complete
-                      </button>
-                    </form>
-                  </td>
-                </tr>
+                  <tr>
+                    <td>
+                      <a class="imglink" href="{{ pot.image_url }}">{{ pot.image_url }}</a>
+                    </td>
+                    <td>{{ pot.location }}</td>
+                    <td>{{ pot.datetime }}</td>
+                    <td>
+                      {% if pot.status %}
+                        <span class="badge badge-success">Completed</span>
+                      {% else %}
+                        <span class="badge badge-warning">Pending</span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      <form action="status2" method="POST">
+                        {% csrf_token %}
+                        <input name="submit2" value="{{ pot.image_url }}" type="text" hidden />
+                        <button type="submit" class="btn btn-success">Complete</button>
+                      </form>
+                    </td>
+                  </tr>
                 {% endfor %}
               </tbody>
             </table>
@@ -198,36 +183,27 @@
               </thead>
               <tbody>
                 {% for cat in cattles %}
-                <tr>
-                  <td>
-                    <a class="imglink" href="{{ cat.image_url }}"
-                      >{{ cat.image_url }}</a
-                    >
-                  </td>
-                  <td>{{ cat.location }}</td>
-                  <td>{{ cat.datetime }}</td>
-                  <td>
-                    {% if cat.status %}
-                    <span class="badge badge-success">Completed</span>
-                    {% else %}
-                    <span class="badge badge-warning">Pending</span>
-                    {% endif %}
-                  </td>
-                  <td>
-                    <form action="status3" method="POST">
-                      {% csrf_token %}
-                      <input
-                        name="submit3"
-                        value="{{ cat.image_url }}"
-                        type="text"
-                        hidden
-                      />
-                      <button type="submit" class="btn btn-success">
-                        Complete
-                      </button>
-                    </form>
-                  </td>
-                </tr>
+                  <tr>
+                    <td>
+                      <a class="imglink" href="{{ cat.image_url }}">{{ cat.image_url }}</a>
+                    </td>
+                    <td>{{ cat.location }}</td>
+                    <td>{{ cat.datetime }}</td>
+                    <td>
+                      {% if cat.status %}
+                        <span class="badge badge-success">Completed</span>
+                      {% else %}
+                        <span class="badge badge-warning">Pending</span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      <form action="status3" method="POST">
+                        {% csrf_token %}
+                        <input name="submit3" value="{{ cat.image_url }}" type="text" hidden />
+                        <button type="submit" class="btn btn-success">Complete</button>
+                      </form>
+                    </td>
+                  </tr>
                 {% endfor %}
               </tbody>
             </table>
