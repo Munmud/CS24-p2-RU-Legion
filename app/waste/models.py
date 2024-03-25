@@ -7,6 +7,7 @@ VEHICLE_TYPES = [
     ('Compactor', 'Compactor'),
     ('Container Carrier', 'Container Carrier'),
 ]
+
 CAPACITY_CHOICES = [
     (3, '3 ton'),
     (5, '5 ton'),
@@ -35,3 +36,23 @@ class STS(models.Model):
 
     def __str__(self):
         return f"Sts in {self.Address}"
+
+
+class WasteTransfer(models.Model):
+    sts = models.ForeignKey(STS, on_delete=models.CASCADE)
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
+    volume = models.DecimalField(max_digits=10, decimal_places=2)
+    departure = models.DateTimeField(null=True)
+    arrival = models.DateTimeField(null=True)
+
+    def __str__(self):
+        return f"Transfer from {self.sts} departure at {self.departure}"
+
+
+class Landfill(models.Model):
+    Address = models.CharField(max_length=255)
+    Capacity = models.IntegerField()
+    Latitude = models.DecimalField(max_digits=9, decimal_places=6)
+    Longitude = models.DecimalField(max_digits=9, decimal_places=6)
+    Landfill_Manager_ID = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True)

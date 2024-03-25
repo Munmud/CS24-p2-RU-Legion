@@ -1,5 +1,14 @@
 from django.contrib import admin
-from .models import STS, Vehicle
+from .models import STS, Vehicle, Landfill
+
+
+class LandfillAdmin(admin.ModelAdmin):
+    list_display = ('id', 'Address', 'Capacity', 'Latitude',
+                    'Longitude', 'Landfill_Manager_ID')
+    list_per_page = 20
+
+
+admin.site.register(Landfill, LandfillAdmin)
 
 
 class VehicleAdmin(admin.ModelAdmin):
