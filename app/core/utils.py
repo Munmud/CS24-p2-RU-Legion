@@ -20,29 +20,31 @@ def load_sts():
         for row in reader:
             # print(row)
             try:
-                Ward = int(row.get("Ward"))
-                Zone = int(row.get("Zone"))
-                Capacity = int(row.get("Capacity"))
-                Address = row.get("Address")
-                match = re.match(pattern, row.get("GPS Location"))
+                ward = int(row.get("ward"))
+                zone = int(row.get("zone"))
+                capacity = int(row.get("capacity"))
+                address = row.get("address")
+                match = re.match(pattern, row.get("gps"))
                 if match:
-                    Latitude = float(match.group(1))
+                    latitude = float(match.group(1))
                     if match.group(2) == 'S':
-                        Latitude *= -1  # Southern hemisphere
-                    Longitude = float(match.group(3))
+                        latitude *= -1  # Southern hemisphere
+                    longitude = float(match.group(3))
                     if match.group(4) == 'W':
-                        Longitude *= -1  # Western hemisphere
+                        longitude *= -1  # Western hemisphere
             except Exception as e:
+                print(e)
                 continue
             data = {
-                'Ward':  Ward,
-                'Capacity':  Capacity,
-                'Zone':  Zone,
-                'Address':  Address,
-                'Latitude':  Latitude,
-                'Longitude':  Longitude,
+                'ward':  ward,
+                'capacity':  capacity,
+                'zone':  zone,
+                'address':  address,
+                'latitude':  latitude,
+                'longitude':  longitude,
             }
             dataset.append(data)
+            # print(data)
     return dataset
 
 

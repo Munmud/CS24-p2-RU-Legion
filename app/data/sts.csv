@@ -1,4 +1,4 @@
-STS ID,Zone,Ward,Address,Capacity,STS Manager ID,GPS Location
+id,zone,ward,address,capacity,manager,gps
 1,1,1,"BDR Bazar, Uttara",1001,985,"23.8763° N, 90.3961° E"
 2,1,1,"Section-12, Kabarsthan, Uttara",950,632,"23.8765° N, 90.3978° E"
 3,1,1,"Jashim Uddin Road, Uttara",800,853,"23.8790° N, 90.3967° E"

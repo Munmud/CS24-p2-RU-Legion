@@ -25,22 +25,31 @@ class Vehicle(models.Model):
 
 
 class STS(models.Model):
-    Zone = models.IntegerField()
-    Ward = models.IntegerField()
-    Address = models.CharField(max_length=255)
-    Capacity = models.IntegerField()
-    Latitude = models.DecimalField(max_digits=9, decimal_places=6)
-    Longitude = models.DecimalField(max_digits=9, decimal_places=6)
-    STS_Manager_ID = models.ForeignKey(
+    zone = models.IntegerField()
+    ward = models.IntegerField()
+    address = models.CharField(max_length=255)
+    capacity = models.IntegerField()
+    latitude = models.DecimalField(max_digits=9, decimal_places=6)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6)
+    manager = models.ForeignKey(
         User, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
-        return f"Sts in {self.Address}"
+        return f"Sts in {self.address}"
+
+
+class Landfill(models.Model):
+    address = models.CharField(max_length=255)
+    capacity = models.IntegerField()
+    latitude = models.DecimalField(max_digits=9, decimal_places=6)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6)
+    manager = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True)
 
 
 class WasteTransfer(models.Model):
-    sts = models.ForeignKey(STS, on_delete=models.CASCADE)
-    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
+    sts = models.ForeignKey(STS, on_delete=models.DO_NOTHING)
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.DO_NOTHING)
     volume = models.DecimalField(max_digits=10, decimal_places=2)
     departure = models.DateTimeField(null=True)
     arrival = models.DateTimeField(null=True)
@@ -49,10 +58,12 @@ class WasteTransfer(models.Model):
         return f"Transfer from {self.sts} departure at {self.departure}"
 
 
-class Landfill(models.Model):
-    Address = models.CharField(max_length=255)
-    Capacity = models.IntegerField()
-    Latitude = models.DecimalField(max_digits=9, decimal_places=6)
-    Longitude = models.DecimalField(max_digits=9, decimal_places=6)
-    Landfill_Manager_ID = models.ForeignKey(
-        User, on_delete=models.SET_NULL, null=True)
+class WasteDumping(models.Model):
+    landfill = models.ForeignKey(Landfill, on_delete=models.DO_NOTHING)
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.DO_NOTHING)
+    volume = models.DecimalField(max_digits=10, decimal_places=2)
+    departure = models.DateTimeField(null=True)
+    arrival = models.DateTimeField(null=True)
+
+    def __str__(self):
+        return f"Transfer from {self.sts} departure at {self.departure}"

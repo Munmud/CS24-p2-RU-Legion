@@ -3,8 +3,8 @@ from .models import STS, Vehicle, Landfill
 
 
 class LandfillAdmin(admin.ModelAdmin):
-    list_display = ('id', 'Address', 'Capacity', 'Latitude',
-                    'Longitude', 'Landfill_Manager_ID')
+    list_display = ('id', 'address', 'capacity', 'latitude',
+                    'longitude', 'manager')
     list_per_page = 20
 
 
@@ -21,9 +21,9 @@ admin.site.register(Vehicle, VehicleAdmin)
 
 
 class STSAdmin(admin.ModelAdmin):
-    list_display = ('id', 'Zone', 'Ward', 'Address', 'Capacity',
-                    'Latitude', 'Longitude', 'STS_Manager_ID')
-    search_fields = ('Address',)
+    list_display = ('id', 'zone', 'ward', 'address', 'capacity',
+                    'latitude', 'longitude', 'manager')
+    search_fields = ('address',)
     list_per_page = 20
 
 
