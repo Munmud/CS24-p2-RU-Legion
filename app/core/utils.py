@@ -21,7 +21,11 @@ def create_system_admin(username, email, password):
 
 
 def is_system_admin(user):
-    return user.groups.filter(name='System Admin').exists()
+    return user.groups.filter(name=settings.GROUP_NAME_SYSTEM_ADMIN).exists()
+
+
+def is_sts_manager(user):
+    return user.groups.filter(name=settings.GROUP_NAME_STS_MANAGER).exists()
 
 
 def load_sts():

@@ -29,7 +29,7 @@ class Vehicle(models.Model):
         max_digits=5, decimal_places=2, default=0.0)
 
     def __str__(self):
-        return f"{self.vehicle_number} {self.type} {self.capacity}"
+        return f"{self.vehicle_number} {self.type} {self.capacity} tons"
 
 
 class STS(models.Model):
@@ -74,6 +74,9 @@ class Landfill(models.Model):
     capacity = models.IntegerField()
     latitude = models.CharField(max_length=20)
     longitude = models.CharField(max_length=20)
+
+    def __str__(self):
+        return f"Landfill in {self.address}"
 
 
 class LandfillManager(models.Model):

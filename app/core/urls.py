@@ -9,7 +9,7 @@ from waste import views as waste_app
 from .views import dashboard
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls, name='admin_dashboard'),
 
     # auth
     path('auth/login', auth_app.user_login, name='login'),
@@ -21,6 +21,10 @@ urlpatterns = [
 
     # Ststem Admin
     path('system_admin/add_vehicle/', waste_app.add_vehicle, name="add_vehicle"),
+
+    # STS Manager
+    path('sts_manager/transfer_waste/',
+         waste_app.add_waste_transfer, name="add_waste_transfer"),
 
 
     path('', dashboard, name='dashboard'),

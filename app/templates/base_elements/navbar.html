@@ -2,20 +2,21 @@
 <div class="sidebar-wrapper" id="sidebar-wrapper">
   <ul class="nav">
     <li class="active">
-      <a href="{% url 'dashboard' %}">
-        <i class="now-ui-icons design_app"></i>
-        <p>Dashboard</p>
-      </a>
-
       {% if user.is_authenticated %}
+        <a href="{% url 'dashboard' %}">
+          <i class="now-ui-icons design_app"></i>
+          <p>Dashboard</p>
+        </a>
         {% if request.user|has_group:'System Admin' %}
-          <a href="{% url 'register' %}" style="margin-top: 10px;">
-            <i class="now-ui-icons users_single-02"></i>
-            <p>Create New User</p>
+          <a href="admin/" style="margin-top: 10px;">
+            <i class="fa fa-cogs"></i>
+            <p>Admin Dashboard</p>
           </a>
-          <a href="{% url 'add_vehicle' %}" style="margin-top: 10px;">
-            <i class="fa fa-car"></i>
-            <p>Add Vehicle</p>
+        {% endif %}
+        {% if request.user|has_group:'STS Manager' %}
+          <a href="{% url 'add_waste_transfer' %}" style="margin-top: 10px;">
+            <i class="fa fa-truck"></i>
+            <p>Transfer Waste</p>
           </a>
         {% endif %}
 
