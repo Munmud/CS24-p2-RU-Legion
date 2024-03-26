@@ -43,17 +43,6 @@ services:
   #   depends_on:
   #     - db
   #     - broker
-  # frontend:
-  #   build: ./frontend
-  #   image: code-samurai-react
-  #   volumes:
-  #     - ./frontend:/usr/src/app
-  #     - node_modules:/usr/src/app/node_modules
-  #   ports:
-  #     - "3000:5173"
-  #   depends_on:
-  #     - db
-  #     - app
 
 volumes:
   rabbitmq_data:
