@@ -74,7 +74,7 @@
         style: "tomtom://vector/1/basic-main",
 
         center: [90.433900, 23.828800],
-        zoom: 8
+        zoom: 11
       });
       map.addControl(new tt.FullscreenControl());
       map.addControl(new tt.NavigationControl());
@@ -91,8 +91,7 @@
 
         var iconElement = document.createElement('div');
         iconElement.className = 'marker-icon';
-        iconElement.style.backgroundImage =
-          'url(https://api.tomtom.com/maps-sdk-for-web/5.x/assets/images/' + icon + ')';
+        iconElement.style.backgroundImage = 'url(' + icon + ')';
         markerContentElement.appendChild(iconElement);
 
         var popup = new tt.Popup({
@@ -108,8 +107,10 @@
           .addTo(map);
       }
       {% for sts in sts_list %}
-      createMarker('accident.colors-white.jpg', [{{ sts.longitude }},{{ sts.latitude }} ], '#c31a26', '{{ gar.location }}');
+      createMarker('https://static.vecteezy.com/system/resources/previews/015/057/882/original/landfill-creative-icon-design-free-vector.jpg', [{{ sts.longitude }},{{ sts.latitude }} ], '#c31a26', '{{ sts.address }} STS');
       {% endfor %}
+
+      createMarker('https://cdn-icons-png.freepik.com/512/8134/8134420.png', [90.30016736544847,23.79795912830887 ], '#000000', 'Amin Bazar Landfill');
     </script>
     <!-- Chart JS -->
     <script src="{% static 'assets\js\plugins\chartjs.min.js' %}"></script>
