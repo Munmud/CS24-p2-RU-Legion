@@ -1,10 +1,10 @@
 from django.contrib import admin
-from .models import STS, Vehicle, Landfill
+from .models import STS, Vehicle, Landfill, STSManager
 
 
 class LandfillAdmin(admin.ModelAdmin):
     list_display = ('id', 'address', 'capacity', 'latitude',
-                    'longitude', 'manager')
+                    'longitude')
     list_per_page = 20
 
 
@@ -23,9 +23,18 @@ admin.site.register(Vehicle, VehicleAdmin)
 
 class STSAdmin(admin.ModelAdmin):
     list_display = ('id', 'zone', 'ward', 'address', 'capacity',
-                    'latitude', 'longitude', 'manager')
+                    'latitude', 'longitude')
     search_fields = ('address',)
     list_per_page = 20
 
 
 admin.site.register(STS, STSAdmin)
+
+
+class STSManagerAdmin(admin.ModelAdmin):
+    list_display = ('id', 'sts', 'user')
+    search_fields = ('user', 'sts')
+    list_per_page = 20
+
+
+admin.site.register(STSManager, STSManagerAdmin)

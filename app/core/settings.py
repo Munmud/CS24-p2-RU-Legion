@@ -137,6 +137,10 @@ CELERY_RESULT_EXTENDED = True
 CELERY_TIMEZONE = "Asia/Dhaka"
 
 
+GROUP_NAME_SYSTEM_ADMIN = 'System Admin'
+GROUP_NAME_STS_MANAGER = 'STS Manager'
+GROUP_NAME_LANDFILL_MANAGER = 'Landfill Manager'
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True

@@ -1,5 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.dispatch import receiver
+from django.contrib.auth.models import Group, Permission
+from django.conf import settings
+
 
 VEHICLE_TYPES = [
     ('Open Truck', 'Open Truck'),
@@ -35,11 +39,34 @@ class STS(models.Model):
     capacity = models.IntegerField()
     latitude = models.CharField(max_length=20)
     longitude = models.CharField(max_length=20)
-    manager = models.ForeignKey(
-        User, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return f"Sts in {self.address}"
+
+
+class STSManager(models.Model):
+    sts = models.ForeignKey(STS, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ['user']
+
+
+@receiver(models.signals.post_save, sender=STSManager)
+def create_sts_manager(sender, instance, created, **kwargs):
+    if created:
+        group, create = Group.objects.get_or_create(
+            name=settings.GROUP_NAME_STS_MANAGER)
+        user = User.objects.get(username=instance.user.username)
+        user.groups.add(group)
+
+
+@receiver(models.signals.post_delete, sender=STSManager)
+def delete_sts_manager(sender, instance, **kwargs):
+    group, created = Group.objects.get_or_create(
+        name=settings.GROUP_NAME_STS_MANAGER)
+    user = User.objects.get(username=instance.user.username)
+    user.groups.remove(group)
 
 
 class Landfill(models.Model):
@@ -47,8 +74,31 @@ class Landfill(models.Model):
     capacity = models.IntegerField()
     latitude = models.CharField(max_length=20)
     longitude = models.CharField(max_length=20)
-    manager = models.ForeignKey(
-        User, on_delete=models.SET_NULL, null=True)
+
+
+class LandfillManager(models.Model):
+    landfill = models.ForeignKey(Landfill, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ['user']
+
+
+@receiver(models.signals.post_save, sender=LandfillManager)
+def create_landfill_manager(sender, instance, created, **kwargs):
+    if created:
+        group, create = Group.objects.get_or_create(
+            name=settings.GROUP_NAME_LANDFILL_MANAGER)
+        user = User.objects.get(username=instance.user.username)
+        user.groups.add(group)
+
+
+@receiver(models.signals.post_delete, sender=LandfillManager)
+def delete_landfill_manager(sender, instance, **kwargs):
+    group, created = Group.objects.get_or_create(
+        name=settings.GROUP_NAME_LANDFILL_MANAGER)
+    user = User.objects.get(username=instance.user.username)
+    user.groups.remove(group)
 
 
 class WasteTransfer(models.Model):
