@@ -7,7 +7,8 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
 
-from core.utils import is_system_admin, send_forget_password_mail
+from core.utils import is_system_admin
+from .tasks import send_forget_password_mail
 from .forms import CustomUserCreationForm
 from .models import Profile
 
@@ -91,14 +92,15 @@ def ForgetPassword(request):
             username = request.POST.get('username')
 
             if not User.objects.filter(username=username).first():
-                messages.success(request, 'Not user found with this username.')
+                messages.error(request, 'Not user found with this username.')
                 return redirect('forget_password')
             user_obj = User.objects.get(username=username)
             token = str(uuid.uuid4())
             profile_obj = Profile.objects.get(user=user_obj)
             profile_obj.forget_password_token = token
             profile_obj.save()
-            send_forget_password_mail(user_obj.email, token)
+            result = send_forget_password_mail.delay(user_obj.email, token)
+            print(result)
             messages.success(request, 'An email is sent.')
             return redirect('forget-password')
 

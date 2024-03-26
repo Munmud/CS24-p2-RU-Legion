@@ -29,10 +29,10 @@ services:
       - DB_PASS=supersecreatpassword
     depends_on:
       - db
-  # broker:
-  #   image: "rabbitmq:alpine"
-  #   volumes:
-  #     - rabbitmq_data:/var/lib/rabbitmq
+  broker:
+    image: "rabbitmq:alpine"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
   # celery:
   #   build: ./app
   #   image: code-samurai-celery-worker
