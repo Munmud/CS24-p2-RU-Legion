@@ -13,17 +13,22 @@ class Command(BaseCommand):
     help = 'Load initial data into the database'
 
     def handle(self, *args, **options):
+        cc = 0
         for sts in load_sts():
             STS.objects.create(**sts)
-        print('Successfully loaded sts db...')
+            cc += 1
+        print(f'Successfully loaded {cc} STS into db...')
 
+        cc = 0
         for vehicle in load_vehicle():
             Vehicle.objects.create(**vehicle)
-        print('Successfully loaded vehicle db...')
+            cc += 1
+        print(f'Successfully loaded {cc} Vehicle into db...')
 
         Landfill.objects.create(
-            address="Amin Bazar",
+            address="Amin Bazar Landfill",
             capacity=3500,
             latitude=23.79795912830887,
             longitude=90.30016736544847,
         )
+        print(f'Successfully loaded 1 Landfill into db...')

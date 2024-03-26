@@ -19,6 +19,10 @@ class Vehicle(models.Model):
     vehicle_number = models.CharField(max_length=20, unique=True)
     type = models.CharField(max_length=20, choices=VEHICLE_TYPES)
     capacity = models.IntegerField(choices=CAPACITY_CHOICES)
+    loaded_fuel_cost_per_km = models.DecimalField(
+        max_digits=5, decimal_places=2, default=0.0)
+    unloaded_fuel_cost_per_km = models.DecimalField(
+        max_digits=5, decimal_places=2, default=0.0)
 
     def __str__(self):
         return f"{self.vehicle_number} {self.type} {self.capacity}"

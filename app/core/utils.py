@@ -40,6 +40,8 @@ def load_vehicle():
                 'vehicle_number': row.get("vehicle_number"),
                 'type': row.get("type"),
                 'capacity': int(row.get("capacity")),
+                'loaded_fuel_cost_per_km':  float(row.get("loaded_fuel_cost_per_km")),
+                'unloaded_fuel_cost_per_km': float(row.get("unloaded_fuel_cost_per_km"))
             }
             dataset.append(data)
             # print(data)
