@@ -1,0 +1,10 @@
+{% extends 'base.html' %} {% block content %}
+  <div class="content" style=" text-align: center; margin: 0 auto;">
+    <h4>Add Vehicle</h4>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+{% endblock %}

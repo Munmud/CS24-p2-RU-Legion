@@ -5,6 +5,7 @@ from django.conf.urls.static import static
 from django.urls import re_path
 
 from authentication import views as auth_app
+from waste import views as waste_app
 from .views import dashboard
 
 urlpatterns = [
@@ -18,6 +19,8 @@ urlpatterns = [
     path('auth/change-password/<token>/',
          auth_app.ChangePassword, name="change_password"),
 
+    # Ststem Admin
+    path('system_admin/add_vehicle/', waste_app.add_vehicle, name="add_vehicle"),
 
 
     path('', dashboard, name='dashboard'),
