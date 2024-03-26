@@ -1,5 +1,21 @@
 from django.contrib import admin
-from .models import STS, Vehicle, Landfill, STSManager
+from .models import STS, Vehicle, Landfill, STSManager, WasteTransfer, WasteDumping
+
+
+class WasteTransferAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in WasteTransfer._meta.fields]
+    list_per_page = 20
+
+
+admin.site.register(WasteTransfer, WasteTransferAdmin)
+
+
+class WasteDumpingAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in WasteDumping._meta.fields]
+    list_per_page = 20
+
+
+admin.site.register(WasteDumping, WasteDumpingAdmin)
 
 
 class LandfillAdmin(admin.ModelAdmin):

@@ -103,6 +103,7 @@ def delete_landfill_manager(sender, instance, **kwargs):
 
 class WasteTransfer(models.Model):
     sts = models.ForeignKey(STS, on_delete=models.DO_NOTHING)
+    landfill = models.ForeignKey(Landfill, on_delete=models.DO_NOTHING)
     vehicle = models.ForeignKey(Vehicle, on_delete=models.DO_NOTHING)
     volume = models.DecimalField(max_digits=10, decimal_places=2)
     departure = models.DateTimeField(null=True)

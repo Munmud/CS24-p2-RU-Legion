@@ -3,17 +3,15 @@ from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
+from django.conf import settings
 
 from core.utils import create_system_admin
-from waste.models import STS, STSManager
+from waste.models import WasteTransfer, WasteDumping
 
 USER_USER1 = 'user1'
 USER_USER2 = 'user2'
 USER_ADMIN = 'admin'
 PASSWORD = 'pass'
-GROUP_SYSTEM_ADMIN = 'System Admin'
-GROUP_STS_MANAGER = 'STS Manager'
-GROUP_LANDFILL_MANAGER = 'Landfill Manager'
 
 
 # def create_general_users(self):
@@ -48,9 +46,9 @@ def create_super_user(self):
 
 def create_groups(self):
     group_names = [
-        GROUP_SYSTEM_ADMIN,
-        GROUP_STS_MANAGER,
-        GROUP_LANDFILL_MANAGER
+        settings.GROUP_NAME_SYSTEM_ADMIN,
+        settings.GROUP_NAME_STS_MANAGER,
+        settings.GROUP_NAME_LANDFILL_MANAGER
     ]
     for group in group_names:
         if not Group.objects.filter(name=group).exists():
@@ -63,25 +61,35 @@ def create_groups(self):
 
 
 def add_permissions_to_system_admin_group(self):
-    group = Group.objects.get(name=GROUP_SYSTEM_ADMIN)
+    group = Group.objects.get(name=settings.GROUP_NAME_SYSTEM_ADMIN)
 
     # Get all available content types (models)
     content_types = ContentType.objects.all()
 
     # Get all permissions for each model and add them to the system_admin group
     for content_type in content_types:
-        print(content_type)
         permissions = Permission.objects.filter(content_type=content_type)
         group.permissions.add(*permissions)
 
 
 def add_permissions_to_sts_manager_group(self):
-    pass
+    group = Group.objects.get(name=settings.GROUP_NAME_STS_MANAGER)
+    content_type = ContentType.objects.get_for_model(WasteTransfer)
+    permissions = Permission.objects.filter(content_type=content_type)
+    group.permissions.add(*permissions)
+
+
+def add_permissions_to_landfill_manager_group(self):
+    group = Group.objects.get(name=settings.GROUP_NAME_LANDFILL_MANAGER)
+    content_type = ContentType.objects.get_for_model(WasteDumping)
+    permissions = Permission.objects.filter(content_type=content_type)
+    group.permissions.add(*permissions)
 
 
 def add_user1_to_system_admin_group(self):
     librarian_user = User.objects.get(username=USER_USER1)
-    system_admin_group = Group.objects.get(name=GROUP_SYSTEM_ADMIN)
+    system_admin_group = Group.objects.get(
+        name=settings.GROUP_NAME_SYSTEM_ADMIN)
     librarian_user.groups.add(system_admin_group)
 
 
@@ -90,9 +98,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         # create_general_users(self)
-        create_super_user(self)
+        # create_super_user(self)
         create_groups(self)
         add_permissions_to_system_admin_group(self)
+        add_permissions_to_sts_manager_group(self)
+        add_permissions_to_landfill_manager_group(self)
         # add_user1_to_system_admin_group(self)
 
         create_system_admin(
