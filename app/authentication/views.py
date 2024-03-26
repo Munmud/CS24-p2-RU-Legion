@@ -1,27 +1,15 @@
 # myapp/views.py
+import uuid
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.models import User
 
-
-# from django.contrib.auth import get_user_model
-# from django.contrib.auth.tokens import default_token_generator
-# from django.db.models.query_utils import Q
-# from django.utils.encoding import force_bytes
-# from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-# from django.template import loader
-# from django.core.validators import validate_email
-# from django.core.exceptions import ValidationError
-# from django.core.mail import send_mail
-# from core.settings import DEFAULT_FROM_EMAIL
-# from django.views.generic import *
-# from django.contrib import messages
-# from django.contrib.auth.models import User
-
-from core.utils import is_system_admin
-from .forms import CustomUserCreationForm, PasswordResetRequestForm, SetPasswordForm
+from core.utils import is_system_admin, send_forget_password_mail
+from .forms import CustomUserCreationForm
+from .models import Profile
 
 
 @user_passes_test(is_system_admin)
@@ -30,6 +18,7 @@ def register(request):
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
+            Profile.objects.create(user=user)
             # login(request, user)
             # Redirect to dashboard or any other page after registration
             return redirect('dashboard')
@@ -60,123 +49,59 @@ def user_logout(request):
     return redirect('dashboard')
 
 
-# class ResetPasswordRequestView(FormView):
-#     # code for template is given below the view's code
-#     template_name = "account/test_template.html"
-#     success_url = '/admin/'
-#     form_class = PasswordResetRequestForm
+def ChangePassword(request, token):
+    context = {}
 
-#     @staticmethod
-#     def validate_email_address(email):
+    try:
+        profile_obj = Profile.objects.filter(
+            forget_password_token=token).first()
+        if profile_obj is None:
+            messages.error(request, 'Not a valid Token')
+            return redirect('login')
 
-#         try:
-#             validate_email(email)
-#             return True
-#         except ValidationError:
-#             return False
+        context = {'user_id': profile_obj.user.id}
 
-#     def reset_password(self, user, request):
-#         c = {
-#             'email': user.email,
-#             'domain': request.META['HTTP_HOST'],
-#             'site_name': 'your site',
-#             'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-#             'user': user,
-#             'token': default_token_generator.make_token(user),
-#             'protocol': 'http',
-#         }
-#         subject_template_name = 'registration/password_reset_subject.txt'
-#         # copied from
-#         # django/contrib/admin/templates/registration/password_reset_subject.txt
-#         # to templates directory
-#         email_template_name = 'registration/password_reset_email.html'
-#         # copied from
-#         # django/contrib/admin/templates/registration/password_reset_email.html
-#         # to templates directory
-#         subject = loader.render_to_string(subject_template_name, c)
-#         # Email subject *must not* contain newlines
-#         subject = ''.join(subject.splitlines())
-#         email = loader.render_to_string(email_template_name, c)
-#         send_mail(subject, email, DEFAULT_FROM_EMAIL,
-#                   [user.email], fail_silently=False)
+        if request.method == 'POST':
+            new_password = request.POST.get('new_password')
+            confirm_password = request.POST.get('reconfirm_password')
+            user_id = request.POST.get('user_id')
 
-#     def post(self, request, *args, **kwargs):
-#         form = self.form_class(request.POST)
-#         try:
-#             if form.is_valid():
-#                 data = form.cleaned_data["email_or_username"]
-#             # uses the method written above
-#             if self.validate_email_address(data) is True:
-#                 '''
-#                 If the input is an valid email address, then the following code will lookup for users associated with that email address. If found then an email will be sent to the address, else an error message will be printed on the screen.
-#                 '''
-#                 associated_users = User.objects.filter(
-#                     Q(email=data) | Q(username=data))
-#                 if associated_users.exists():
-#                     for user in associated_users:
-#                         self.reset_password(user, request)
+            if user_id is None:
+                messages.error(request, 'No user id found.')
+                return redirect(f'change_password', token=token)
 
-#                     result = self.form_valid(form)
-#                     messages.success(
-#                         request, 'An email has been sent to {0}. Please check its inbox to continue reseting password.'.format(data))
-#                     return result
-#                 result = self.form_invalid(form)
-#                 messages.error(
-#                     request, 'No user is associated with this email address')
-#                 return result
-#             else:
-#                 '''
-#                 If the input is an username, then the following code will lookup for users associated with that user. If found then an email will be sent to the user's address, else an error message will be printed on the screen.
-#                 '''
-#                 associated_users = User.objects.filter(username=data)
-#                 if associated_users.exists():
-#                     for user in associated_users:
-#                         self.reset_password(user, request)
-#                     result = self.form_valid(form)
-#                     messages.success(
-#                         request, "Email has been sent to {0}'s email address. Please check its inbox to continue reseting password.".format(data))
-#                     return result
-#                 result = self.form_invalid(form)
-#                 messages.error(
-#                     request, 'This username does not exist in the system.')
-#                 return result
-#             messages.error(request, 'Invalid Input')
-#         except Exception as e:
-#             print(e)
-#         return self.form_invalid(form)
+            if new_password != confirm_password:
+                messages.error(request, 'both should  be equal.')
+                return redirect(f'change_password', token=token)
+
+            user_obj = User.objects.get(id=user_id)
+            user_obj.set_password(new_password)
+            user_obj.save()
+            messages.success(request, 'Password change successful')
+            return redirect('login')
+
+    except Exception as e:
+        print(e)
+    return render(request, 'change-password.html', context)
 
 
-# class PasswordResetConfirmView(FormView):
-#     template_name = "account/test_template.html"
-#     success_url = '/admin/'
-#     form_class = SetPasswordForm
+def ForgetPassword(request):
+    try:
+        if request.method == 'POST':
+            username = request.POST.get('username')
 
-#     def post(self, request, uidb64=None, token=None, *arg, **kwargs):
-#         """
-#         View that checks the hash in a password reset link and presents a
-#         form for entering a new password.
-#         """
-#         UserModel = get_user_model()
-#         form = self.form_class(request.POST)
-#         assert uidb64 is not None and token is not None  # checked by URLconf
-#         try:
-#             uid = urlsafe_base64_decode(uidb64)
-#             user = UserModel._default_manager.get(pk=uid)
-#         except (TypeError, ValueError, OverflowError, UserModel.DoesNotExist):
-#             user = None
+            if not User.objects.filter(username=username).first():
+                messages.success(request, 'Not user found with this username.')
+                return redirect('forget_password')
+            user_obj = User.objects.get(username=username)
+            token = str(uuid.uuid4())
+            profile_obj = Profile.objects.get(user=user_obj)
+            profile_obj.forget_password_token = token
+            profile_obj.save()
+            send_forget_password_mail(user_obj.email, token)
+            messages.success(request, 'An email is sent.')
+            return redirect('forget-password')
 
-#         if user is not None and default_token_generator.check_token(user, token):
-#             if form.is_valid():
-#                 new_password = form.cleaned_data['new_password2']
-#                 user.set_password(new_password)
-#                 user.save()
-#                 messages.success(request, 'Password has been reset.')
-#                 return self.form_valid(form)
-#             else:
-#                 messages.error(
-#                     request, 'Password reset has not been unsuccessful.')
-#                 return self.form_invalid(form)
-#         else:
-#             messages.error(
-#                 request, 'The reset password link is no longer valid.')
-#             return self.form_invalid(form)
+    except Exception as e:
+        print(e)
+    return render(request, 'forget-password.html')

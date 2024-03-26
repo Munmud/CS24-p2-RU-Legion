@@ -135,3 +135,11 @@ CELERY_BROKER_URL = 'amqp://guest:guest@broker:5672//'
 CELERY_RESULT_BACKEND = 'django_celery_results.backends.database:DatabaseBackend'
 CELERY_RESULT_EXTENDED = True
 CELERY_TIMEZONE = "Asia/Dhaka"
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'moontasir042@gmail.com'  # Your email address
+EMAIL_HOST_PASSWORD = 'sutz opho plfu nbvv'  # Your email password

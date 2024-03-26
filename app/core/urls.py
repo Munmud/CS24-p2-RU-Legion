@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
+from django.urls import re_path
 
 from authentication import views as auth_app
 from .views import dashboard
@@ -13,6 +14,11 @@ urlpatterns = [
     path('auth/login', auth_app.user_login, name='login'),
     path('auth/logout', auth_app.user_logout, name='logout'),
     path('auth/create', auth_app.register, name='register'),
+    path('auth/forget-password/', auth_app.ForgetPassword, name="forget_password"),
+    path('auth/change-password/<token>/',
+         auth_app.ChangePassword, name="change_password"),
+
+
 
     path('', dashboard, name='dashboard'),
 
