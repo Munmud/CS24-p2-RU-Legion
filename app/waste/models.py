@@ -132,6 +132,18 @@ class WasteTransfer(models.Model):
         return f"Transfer from {self.sts} departure at {self.departure}"
 
 
+@receiver(models.signals.post_save, sender=WasteTransfer)
+# @receiver(models.signals.post_update, sender=WasteTransfer)
+def update_vehicle_status(sender, instance, created, **kwargs):
+    # if created or (kwargs['created'] is False):
+    if instance.arrival is None:
+        instance.vehicle.status = 'In Transit'
+        instance.vehicle.save()
+    else:
+        instance.vehicle.status = 'Available'
+        instance.vehicle.save()
+
+
 class WasteDumping(models.Model):
     landfill = models.ForeignKey(Landfill, on_delete=models.DO_NOTHING)
     vehicle = models.ForeignKey(Vehicle, on_delete=models.DO_NOTHING)

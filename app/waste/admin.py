@@ -28,8 +28,7 @@ admin.site.register(Landfill, LandfillAdmin)
 
 
 class VehicleAdmin(admin.ModelAdmin):
-    list_display = ('id', 'vehicle_number', 'type',
-                    'capacity', 'loaded_fuel_cost_per_km', 'unloaded_fuel_cost_per_km')
+    list_display = [field.name for field in Vehicle._meta.fields]
     search_fields = ('vehicle_number', 'type', 'capacity')
     list_per_page = 20
 
