@@ -56,76 +56,12 @@
         {% include 'base_elements/footer.html' %}
       </div>
     </div>
-    <!-- Core JS Files -->
-    <script src="{% static 'assets\js\core\jquery.min.js' %}"></script>
-    <script src="{% static 'assets\js\core\popper.min.js' %}"></script>
-    <script src="{% static 'assets\js\core\bootstrap.min.js' %}"></script>
-    <script src="{% static 'assets\js\plugins\perfect-scrollbar.jquery.min.js' %}"></script>
-    <!-- Google Maps Plugin -->
-    <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.43.3/maps/maps-web.min.js"></script>
-    <script type="text/javascript" src="{% static 'assets/js/mobile-or-tablet.js' %}"></script>
-    <script>
-      // Define your product name and version.
-      tt.setProductInfo("waste", "0001");
+    {% include 'base_elements/core_js.html' %}
+    {% block js %}
 
-      var map = tt.map({
-        key: "Tx7N5AsswTls8qzJsMiHEzDGNXla4yEv",
-        container: "map",
-        style: "tomtom://vector/1/basic-main",
+    {% endblock %}
 
-        center: [90.433900, 23.828800],
-        zoom: 11
-      });
-      map.addControl(new tt.FullscreenControl());
-      map.addControl(new tt.NavigationControl());
-      map.scrollZoom.disable()
 
-      function createMarker(icon, position, color, popupText) {
-        var markerElement = document.createElement('div');
-        markerElement.className = 'marker';
-
-        var markerContentElement = document.createElement('div');
-        markerContentElement.className = 'marker-content';
-        markerContentElement.style.backgroundColor = color;
-        markerElement.appendChild(markerContentElement);
-
-        var iconElement = document.createElement('div');
-        iconElement.className = 'marker-icon';
-        iconElement.style.backgroundImage = 'url(' + icon + ')';
-        markerContentElement.appendChild(iconElement);
-
-        var popup = new tt.Popup({
-          offset: 30
-        }).setText(popupText);
-        // add marker to map
-        new tt.Marker({
-            element: markerElement,
-            anchor: 'bottom'
-          })
-          .setLngLat(position)
-          .setPopup(popup)
-          .addTo(map);
-      }
-      {% for sts in sts_list %}
-      createMarker('https://static.vecteezy.com/system/resources/previews/015/057/882/original/landfill-creative-icon-design-free-vector.jpg', [{{ sts.longitude }},{{ sts.latitude }} ], '#c31a26', '{{ sts.address }} STS');
-      {% endfor %}
-
-      createMarker('https://cdn-icons-png.freepik.com/512/8134/8134420.png', [90.30016736544847,23.79795912830887 ], '#000000', 'Amin Bazar Landfill');
-    </script>
-    <!-- Chart JS -->
-    <script src="{% static 'assets\js\plugins\chartjs.min.js' %}"></script>
-    <!-- Notifications Plugin -->
-    <script src="{% static 'assets\js\plugins\bootstrap-notify.js' %}"></script>
-    <!-- Control Center for Now Ui Dashboard: parallax effects, scripts for the example pages etc -->
-    <script src="{% static 'assets\js\now-ui-dashboard.min.js' %}" type="text/javascript"></script>
-    <!-- Now Ui Dashboard DEMO methods, don't include it in your project! -->
-    <script src="{% static 'assets\demo\demo.js' %}"></script>
-    <script>
-      $(document).ready(function () {
-        // Javascript method's body can be found in assets/js/demos.js
-        demo.initDashboardPageCharts();
-      });
-    </script>
     <style>
       .imglink {
         width: 140px;

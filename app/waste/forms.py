@@ -12,7 +12,6 @@ class VehicleForm(forms.ModelForm):
 class WasteTransferForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(WasteTransferForm, self).__init__(*args, **kwargs)
-        # Filter vehicles to only active ones
         self.fields['vehicle'].queryset = Vehicle.objects.filter(
             status='Available')
 

@@ -10,8 +10,12 @@ from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from waste.models import STS
 
+from .utils import is_sts_manager, is_system_admin
+
 
 @login_required()
 def dashboard(request):
-    sts_list = STS.objects.all()
-    return render(request, 'common/dashboard.html', {'sts_list': sts_list})
+    if is_system_admin(request.user):
+        sts_list = STS.objects.all()
+        return render(request, 'system_admin/dashboard.html', {'sts_list': sts_list})
+    return render(request, 'common/dashboard.html')
