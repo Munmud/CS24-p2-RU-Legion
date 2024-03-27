@@ -13,9 +13,23 @@ VEHICLE_TYPES = [
 ]
 
 CAPACITY_CHOICES = [
+    (1, '1 ton'),
+    (2, '2 ton'),
     (3, '3 ton'),
+    (4, '4 ton'),
     (5, '5 ton'),
+    (6, '6 ton'),
     (7, '7 ton'),
+    (8, '8 ton'),
+    (9, '9 ton'),
+    (10, '10 ton'),
+]
+
+VEHICLE_STATUS_CHOICES = [
+    ('Available', 'Available'),
+    ('Inactive', 'Inactive'),
+    ('Under Maintenance', 'Under Maintenance'),
+    ('In Transit', 'In Transit'),
 ]
 
 
@@ -27,9 +41,11 @@ class Vehicle(models.Model):
         max_digits=5, decimal_places=2, default=0.0)
     unloaded_fuel_cost_per_km = models.DecimalField(
         max_digits=5, decimal_places=2, default=0.0)
+    status = models.CharField(
+        max_length=20, choices=VEHICLE_STATUS_CHOICES, default='Available')
 
     def __str__(self):
-        return f"{self.vehicle_number} {self.type} {self.capacity} tons"
+        return f"{self.capacity} tons {self.type} {self.vehicle_number}"
 
 
 class STS(models.Model):
