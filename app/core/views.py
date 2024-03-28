@@ -10,7 +10,7 @@ from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from waste.models import *
-from .utils import is_sts_manager, is_system_admin
+from .utils import is_sts_manager, is_system_admin, is_landfill_manager
 
 
 @login_required()
@@ -23,5 +23,14 @@ def dashboard(request):
         waste_transfers = WasteTransfer.objects.exclude(
             status='Completed').order_by('-id').all()
         return render(request, 'sts_manager/dashboard.html', {'waste_transfers': waste_transfers})
+
+    elif is_landfill_manager(request.user):
+        landfill = LandfillManager.objects.get(user=request.user).landfill
+        waste_transfers = WasteTransfer.objects.exclude(
+            status='Completed').order_by('-id').all()
+        return render(request, 'landfill_manager/dashboard.html', {
+            'landfill': landfill,
+            'waste_transfers': waste_transfers
+        })
 
     return render(request, 'common/dashboard.html')

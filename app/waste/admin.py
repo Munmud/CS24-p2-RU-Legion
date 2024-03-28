@@ -18,6 +18,15 @@ class LandfillAdmin(admin.ModelAdmin):
 admin.site.register(Landfill, LandfillAdmin)
 
 
+class LandfillManagerAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in LandfillManager._meta.fields]
+    search_fields = ('user', 'landfill')
+    list_per_page = 20
+
+
+admin.site.register(LandfillManager, LandfillManagerAdmin)
+
+
 class VehicleAdmin(admin.ModelAdmin):
     list_display = [field.name for field in Vehicle._meta.fields]
     search_fields = ('vehicle_number', 'type', 'capacity')

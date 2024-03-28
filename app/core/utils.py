@@ -28,6 +28,10 @@ def is_sts_manager(user):
     return user.groups.filter(name=settings.GROUP_NAME_STS_MANAGER).exists()
 
 
+def is_landfill_manager(user):
+    return user.groups.filter(name=settings.GROUP_NAME_LANDFILL_MANAGER).exists()
+
+
 def load_sts():
     dataset = []
     with open(STS_METADATA_CSV, newline='', encoding="utf8") as csvfile:

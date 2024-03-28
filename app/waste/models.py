@@ -66,7 +66,7 @@ class STS(models.Model):
     longitude = models.CharField(max_length=20)
 
     def __str__(self):
-        return f"Sts in {self.address}"
+        return f"{self.address}"
 
 
 class STSManager(models.Model):

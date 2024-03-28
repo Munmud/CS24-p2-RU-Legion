@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="content" style=" text-align: center; margin: 0 auto;">
+    <h1>{{ landfill }}</h1>
+    <h2>On Going Transfer</h2>
+    <table border="2">
+      <tr>
+        <th>ID</th>
+        <th>STS</th>
+        <th>Vehicle</th>
+        <th>Volume</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+      {% for transfer in waste_transfers %}
+        <tr>
+          <td>{{ transfer.id }}</td>
+          <td>{{ transfer.sts }}</td>
+          <td>{{ transfer.vehicle }}</td>
+          <td>{{ transfer.volume }}</td>
+          <td>{{ transfer.status }}</td>
+          <td>
+            {% if transfer.status == 'Sending to Landfill' %}
+              <a href="{% url 'waste_transfer_start_dumping' transfer.id %}">Start Dumping Waste</a>
+            {% elif transfer.status == 'Dumping in Landfill' %}
+              <a href="{% url 'waste_transfer_end_dumping' transfer.id %}">End Dumping Waste</a>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+{% endblock %}

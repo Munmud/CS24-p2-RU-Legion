@@ -1,9 +1,10 @@
 
 from django.shortcuts import render, redirect, get_object_or_404
-from core.utils import is_system_admin, is_sts_manager
 from django.contrib.auth.decorators import user_passes_test
 from django.utils import timezone
 from django.contrib import messages
+
+from core.utils import is_system_admin, is_sts_manager, is_landfill_manager
 from .forms import *
 from .models import *
 
@@ -44,6 +45,25 @@ def add_waste_transfer(request):
     else:
         form = WasteTransferForm()
     return render(request, 'sts_manager/add_wasteTransfer.html', {'form': form})
+
+
+@user_passes_test(is_landfill_manager)
+def waste_transfer_start_dumping(request, transfer_id):
+    transfer = WasteTransfer.objects.get(id=transfer_id)
+    transfer.status = 'Dumping in Landfill'
+    transfer.arrival_at_landfill = timezone.now()
+    transfer.save()
+    return redirect('dashboard')
+
+
+@user_passes_test(is_landfill_manager)
+def waste_transfer_end_dumping(request, transfer_id):
+    transfer = WasteTransfer.objects.get(id=transfer_id)
+    transfer.departure_from_landfill = timezone.now()
+    transfer.status = 'Returning to STS'
+    transfer.save()
+
+    return redirect('dashboard')
 
 
 # @user_passes_test(is_sts_manager)
