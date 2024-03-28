@@ -32,6 +32,15 @@ VEHICLE_STATUS_CHOICES = [
     ('In Transit', 'In Transit'),
 ]
 
+WASTE_TRANSFER_STATUS_CHOICES = [
+    ('Pending', 'Pending'),
+    ('Sending to Landfill', 'Sending to Landfill'),
+    ('Dumping in Landfill', 'Dumping in Landfill'),
+    ('Returning to STS', 'Returning to STS'),
+    ('Completed', 'Completed'),
+    ('Cancelled', 'Cancelled'),
+]
+
 
 class Vehicle(models.Model):
     vehicle_number = models.CharField(max_length=20, unique=True)
@@ -92,7 +101,7 @@ class Landfill(models.Model):
     longitude = models.CharField(max_length=20)
 
     def __str__(self):
-        return f"Landfill in {self.address}"
+        return f"{self.address}"
 
 
 class LandfillManager(models.Model):
@@ -125,31 +134,25 @@ class WasteTransfer(models.Model):
     landfill = models.ForeignKey(Landfill, on_delete=models.DO_NOTHING)
     vehicle = models.ForeignKey(Vehicle, on_delete=models.DO_NOTHING)
     volume = models.DecimalField(max_digits=10, decimal_places=2)
-    departure = models.DateTimeField(null=True)
-    arrival = models.DateTimeField(null=True)
+    departure_from_sts = models.DateTimeField(null=True)
+    departure_from_landfill = models.DateTimeField(null=True)
+    arrival_at_landfill = models.DateTimeField(null=True)
+    arrival_at_sts = models.DateTimeField(null=True)
+    status = models.CharField(
+        max_length=20,
+        choices=WASTE_TRANSFER_STATUS_CHOICES,
+        default='Pending'
+    )
 
     def __str__(self):
-        return f"Transfer from {self.sts} departure at {self.departure}"
+        return f"Transfer from {self.sts} departure at {self.departure_from_sts}"
 
 
 @receiver(models.signals.post_save, sender=WasteTransfer)
-# @receiver(models.signals.post_update, sender=WasteTransfer)
 def update_vehicle_status(sender, instance, created, **kwargs):
-    # if created or (kwargs['created'] is False):
-    if instance.arrival is None:
+    if instance.status not in ['Completed', 'Cancelled']:
         instance.vehicle.status = 'In Transit'
         instance.vehicle.save()
     else:
         instance.vehicle.status = 'Available'
         instance.vehicle.save()
-
-
-class WasteDumping(models.Model):
-    landfill = models.ForeignKey(Landfill, on_delete=models.DO_NOTHING)
-    vehicle = models.ForeignKey(Vehicle, on_delete=models.DO_NOTHING)
-    volume = models.DecimalField(max_digits=10, decimal_places=2)
-    departure = models.DateTimeField(null=True)
-    arrival = models.DateTimeField(null=True)
-
-    def __str__(self):
-        return f"Transfer from {self.sts} departure at {self.departure}"

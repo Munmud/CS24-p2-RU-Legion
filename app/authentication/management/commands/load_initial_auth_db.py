@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 
 from core.utils import create_system_admin
-from waste.models import WasteTransfer, WasteDumping
+from waste.models import WasteTransfer
 
 USER_USER1 = 'user1'
 USER_USER2 = 'user2'
@@ -81,7 +81,7 @@ def add_permissions_to_sts_manager_group(self):
 
 def add_permissions_to_landfill_manager_group(self):
     group = Group.objects.get(name=settings.GROUP_NAME_LANDFILL_MANAGER)
-    content_type = ContentType.objects.get_for_model(WasteDumping)
+    content_type = ContentType.objects.get_for_model(WasteTransfer)
     permissions = Permission.objects.filter(content_type=content_type)
     group.permissions.add(*permissions)
 

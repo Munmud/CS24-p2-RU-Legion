@@ -25,6 +25,8 @@ urlpatterns = [
     # STS Manager
     path('sts_manager/transfer_waste/',
          waste_app.add_waste_transfer, name="add_waste_transfer"),
+    #     path('sts_manager/transfer_waste/edit/<int:transfer_id>',
+    #          waste_app.edit_waste_transfer, name="edit_waste_transfer"),
 
 
     path('', dashboard, name='dashboard'),

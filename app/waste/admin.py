@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import STS, Vehicle, Landfill, STSManager, WasteTransfer, WasteDumping
+from .models import *
 
 
 class WasteTransferAdmin(admin.ModelAdmin):
@@ -10,17 +10,8 @@ class WasteTransferAdmin(admin.ModelAdmin):
 admin.site.register(WasteTransfer, WasteTransferAdmin)
 
 
-class WasteDumpingAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in WasteDumping._meta.fields]
-    list_per_page = 20
-
-
-admin.site.register(WasteDumping, WasteDumpingAdmin)
-
-
 class LandfillAdmin(admin.ModelAdmin):
-    list_display = ('id', 'address', 'capacity', 'latitude',
-                    'longitude')
+    list_display = [field.name for field in Landfill._meta.fields]
     list_per_page = 20
 
 
@@ -37,8 +28,7 @@ admin.site.register(Vehicle, VehicleAdmin)
 
 
 class STSAdmin(admin.ModelAdmin):
-    list_display = ('id', 'zone', 'ward', 'address', 'capacity',
-                    'latitude', 'longitude')
+    list_display = [field.name for field in STS._meta.fields]
     search_fields = ('address',)
     list_per_page = 20
 
@@ -47,7 +37,7 @@ admin.site.register(STS, STSAdmin)
 
 
 class STSManagerAdmin(admin.ModelAdmin):
-    list_display = ('id', 'sts', 'user')
+    list_display = [field.name for field in STSManager._meta.fields]
     search_fields = ('user', 'sts')
     list_per_page = 20
 
