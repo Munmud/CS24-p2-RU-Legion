@@ -25,6 +25,8 @@ urlpatterns = [
     # STS Manager
     path('sts_manager/transfer_waste/',
          waste_app.add_waste_transfer, name="add_waste_transfer"),
+    path('sts_manager/transfer_waste/complete/<int:transfer_id>',
+         waste_app.waste_transfer_complete, name="waste_transfer_complete"),
 
     # landfill manager
     path('sts_manager/transfer_waste/dump_start/<int:transfer_id>',

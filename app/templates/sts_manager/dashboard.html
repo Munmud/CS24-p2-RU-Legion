@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
   <div class="content" style=" text-align: center; margin: 0 auto;">
+    <h1>{{ sts }}</h1>
     <h2>On Going Transfer</h2>
     <table border="2">
       <tr>
@@ -21,9 +22,9 @@
           <td>{{ transfer.volume }}</td>
           <td>{{ transfer.status }}</td>
           <td>
-            {% comment %} {% if transfer.status == 'Pending' %}
-              <a href="">Approve</a>
-            {% endif %} {% endcomment %}
+            {% if transfer.status == 'Returning to STS' %}
+              <a href="{% url 'waste_transfer_complete' transfer.id %}">Vehicle Returned</a>
+            {% endif %}
           </td>
         </tr>
       {% endfor %}

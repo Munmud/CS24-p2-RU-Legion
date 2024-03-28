@@ -20,9 +20,13 @@ def dashboard(request):
         return render(request, 'system_admin/dashboard.html', {'sts_list': sts_list})
 
     elif is_sts_manager(request.user):
+        sts = STSManager.objects.get(user=request.user).sts
         waste_transfers = WasteTransfer.objects.exclude(
             status='Completed').order_by('-id').all()
-        return render(request, 'sts_manager/dashboard.html', {'waste_transfers': waste_transfers})
+        return render(request, 'sts_manager/dashboard.html', {
+            'sts': sts,
+            'waste_transfers': waste_transfers
+        })
 
     elif is_landfill_manager(request.user):
         landfill = LandfillManager.objects.get(user=request.user).landfill

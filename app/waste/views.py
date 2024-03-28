@@ -1,4 +1,3 @@
-
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import user_passes_test
 from django.utils import timezone
@@ -62,9 +61,16 @@ def waste_transfer_end_dumping(request, transfer_id):
     transfer.departure_from_landfill = timezone.now()
     transfer.status = 'Returning to STS'
     transfer.save()
-
     return redirect('dashboard')
 
+
+@user_passes_test(is_sts_manager)
+def waste_transfer_complete(request, transfer_id):
+    transfer = WasteTransfer.objects.get(id=transfer_id)
+    transfer.arrival_at_sts = timezone.now()
+    transfer.status = 'Completed'
+    transfer.save()
+    return redirect('dashboard')
 
 # @user_passes_test(is_sts_manager)
 # def edit_waste_transfer(request, transfer_id):
