@@ -13,7 +13,6 @@ from waste.models import *
 from .utils import is_sts_manager, is_system_admin, is_landfill_manager
 
 
-@login_required()
 def dashboard(request):
     if is_system_admin(request.user):
         sts_list = STS.objects.all()
