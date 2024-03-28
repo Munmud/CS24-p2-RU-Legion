@@ -6,6 +6,8 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
+from django.conf import settings
+from django.contrib.auth.models import Group
 
 from core.utils import is_system_admin
 from .tasks import send_forget_password_mail
@@ -32,7 +34,19 @@ def user_login(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
+
             user = form.get_user()
+            group_names = [
+                settings.GROUP_NAME_SYSTEM_ADMIN,
+                settings.GROUP_NAME_STS_MANAGER,
+                settings.GROUP_NAME_LANDFILL_MANAGER
+            ]
+            user_groups = Group.objects.filter(user=user, name__in=group_names)
+            if not user_groups.exists():
+                messages.error(
+                    request, f"Users are not assigned any group. Please contact system admin")
+                return render(request, 'common/login.html', {'form': form})
+
             login(request, user)
             messages.success(request, f"Login Successful")
             # Redirect to dashboard or any other page after login
