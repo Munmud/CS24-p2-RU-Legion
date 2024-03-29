@@ -59,7 +59,8 @@ def calculate_route(departure_longitude, departure_latitude, destination_longitu
                 "DriveDistance": round(response["Summary"]["Distance"], 2),
                 "DistanceUnit": response["Summary"]["DistanceUnit"],
                 "DriveTime": round(response["Summary"]["DurationSeconds"]/60, 2),
-                "TimeUnit": "Minutes"
+                "TimeUnit": "Minutes",
+                "PathList": response["Legs"][0]["Geometry"]["LineString"]
             }
         except botocore.exceptions.ClientError as ce:
             logger.exception(ce.response)
