@@ -62,6 +62,11 @@ class Vehicle(models.Model):
         return f"{self.capacity} tons {self.type} {self.vehicle_number}"
 
 
+class Point(models.Model):
+    latitude = models.DecimalField(max_digits=9, decimal_places=6)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6)
+
+
 class STS(models.Model):
     zone = models.IntegerField()
     ward = models.IntegerField()
@@ -115,6 +120,12 @@ class LandfillManager(models.Model):
 
     class Meta:
         unique_together = ['user']
+
+
+class Path(models.Model):
+    sts = models.ForeignKey(STS, on_delete=models.CASCADE)
+    landfill = models.ForeignKey(Landfill, on_delete=models.DO_NOTHING)
+    points = models.ManyToManyField(Point)
 
 
 @receiver(models.signals.post_save, sender=LandfillManager)

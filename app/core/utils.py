@@ -1,7 +1,9 @@
 import os
 import csv
+import json
+import requests
 from django.conf import settings
-import re
+from django.http import JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group, Permission
 
@@ -67,3 +69,19 @@ def load_vehicle():
             # print(data)
             # break
     return dataset
+
+
+def aws_map_route_api(source_lat, source_lon, dest_lat, dest_lon):
+    api_url = 'https://skay3kwtcg.execute-api.ap-south-1.amazonaws.com/Prod/route/'
+    payload = {
+        "source_lat": source_lat,
+        "source_lon": source_lon,
+        "dest_lat": dest_lat,
+        "dest_lon": dest_lon
+    }
+    try:
+        response = requests.post(api_url, json=payload).json()
+        data = json.loads(response['data'][0])
+        return data         # dict of  DriveDistance, DistanceUnit, DriveTime, TimeUnit, PathList
+    except Exception as e:
+        print("errors :", e)

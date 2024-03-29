@@ -9,3 +9,4 @@ SQLAlchemy
 Pillow
 tqdm
 reportlab
+requests
