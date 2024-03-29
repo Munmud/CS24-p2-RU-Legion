@@ -44,7 +44,7 @@ def calculate_route(departure_longitude, departure_latitude, destination_longitu
                                                 IncludeLegGeometry=True,
                                                 OptimizeFor="FastestRoute"
                                                 )
-            print(f"---->Location Response\n{response}")
+            # print(f"---->Location Response\n{response}")
             t2 = time.time()
             # logger.info("Route Time: %.3f" % (t2 - t1))
             if (response["ResponseMetadata"]["HTTPStatusCode"] > 200):
