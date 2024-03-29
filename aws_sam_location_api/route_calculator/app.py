@@ -13,9 +13,10 @@ def lambda_handler(event, context):
         source_lon = data['source_lon']
         dest_lat = data['dest_lat']
         dest_lon = data['dest_lon']
+        optimize_for = data['optimize_for']
         results.append(json.dumps(calculate_route(
             source_lon, source_lat,
-            dest_lon, dest_lat
+            dest_lon, dest_lat, optimize_for
         )))
 
     except Exception as e:

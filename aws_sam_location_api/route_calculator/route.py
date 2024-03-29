@@ -16,7 +16,7 @@ logger.setLevel(logging.INFO)
 location = boto3.client("location")
 
 
-def calculate_route(departure_longitude, departure_latitude, destination_longitude, destination_latitude):
+def calculate_route(departure_longitude, departure_latitude, destination_longitude, destination_latitude, optimize_for):
 
     try:
         if departure_longitude == "":
@@ -33,6 +33,11 @@ def calculate_route(departure_longitude, departure_latitude, destination_longitu
 
         try:
             t1 = time.time()
+
+            departure_longitude = float(departure_longitude)
+            departure_latitude = float(departure_latitude)
+            destination_longitude = float(destination_longitude)
+            destination_latitude = float(destination_latitude)
             response = location.calculate_route(CalculatorName=calculator_name,
                                                 DeparturePosition=[
                                                     departure_longitude, departure_latitude],
@@ -42,7 +47,7 @@ def calculate_route(departure_longitude, departure_latitude, destination_longitu
                                                 DepartNow=True,
                                                 DistanceUnit="Kilometers",
                                                 IncludeLegGeometry=True,
-                                                OptimizeFor="FastestRoute"
+                                                OptimizeFor=optimize_for
                                                 )
             # print(f"---->Location Response\n{response}")
             t2 = time.time()
