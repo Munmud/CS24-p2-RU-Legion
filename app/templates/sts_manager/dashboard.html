@@ -6,7 +6,6 @@
     <table border="2">
       <tr>
         <th>ID</th>
-        <th>STS</th>
         <th>Landfill</th>
         <th>Vehicle</th>
         <th>Volume</th>
@@ -16,7 +15,6 @@
       {% for transfer in waste_transfers %}
         <tr>
           <td>{{ transfer.id }}</td>
-          <td>{{ transfer.sts }}</td>
           <td>{{ transfer.landfill }}</td>
           <td>{{ transfer.vehicle }}</td>
           <td>{{ transfer.volume }}</td>

@@ -14,7 +14,7 @@
           </a>
         {% endif %}
         {% if request.user|has_group:'STS Manager' %}
-          <a href="{% url 'add_waste_transfer' %}" style="margin-top: 10px;">
+          <a href="{% url 'waste_transfer_start' %}" style="margin-top: 10px;">
             <i class="fa fa-truck"></i>
             <p>Transfer Waste</p>
           </a>

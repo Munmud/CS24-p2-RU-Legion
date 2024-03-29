@@ -23,8 +23,12 @@ urlpatterns = [
     path('system_admin/add_vehicle/', waste_app.add_vehicle, name="add_vehicle"),
 
     # STS Manager
-    path('sts_manager/transfer_waste/',
-         waste_app.add_waste_transfer, name="add_waste_transfer"),
+    path('sts_manager/transfer_waste/start',
+         waste_app.waste_transfer_start, name="waste_transfer_start"),
+
+    path('sts_manager/transfer_waste/start_complete',
+         waste_app.waste_transfer_start_complete, name="waste_transfer_start_complete"),
+
     path('sts_manager/transfer_waste/complete/<int:transfer_id>',
          waste_app.waste_transfer_complete, name="waste_transfer_complete"),
 

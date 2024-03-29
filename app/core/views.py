@@ -15,7 +15,6 @@ from .utils import aws_map_route_api
 
 
 def dashboard(request):
-    aws_map_route_api()
     if is_system_admin(request.user):
         sts_list = STS.objects.all()
         landfill_list = Landfill.objects.all()

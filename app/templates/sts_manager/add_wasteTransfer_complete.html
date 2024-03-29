@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block head %}
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <style>
+    #map {
+      height: 380px;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <div class="content" style=" text-align: center; margin: 0 auto;">
+    <h2>Choose Path</h2>
+    <div id="map"></div>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+{% endblock %}
+
+{% block js %}
+  <script>
+    var map = L.map('map')
+    map.setView([23.804693584521388, 90.41487880696623], 12)
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map)
+
+    var sts_icon = L.icon({
+          iconUrl: 'https://cdn-icons-png.flaticon.com/512/1869/1869668.png', 
+          iconSize: [25, 25],
+          iconAnchor: [16, 25],
+          popupAnchor: [0, -25]
+      });
+
+    var landfill_icon = L.icon({
+          iconUrl: 'https://cdn-icons-png.freepik.com/512/8134/8134420.png', 
+          iconSize: [25, 25],
+          iconAnchor: [16, 25],
+          popupAnchor: [0, -25]
+      });
+    
+      var shortest_path_icon =L.icon({
+            iconUrl: 'https://e7.pngegg.com/pngimages/905/993/png-clipart-dot-dot.png', 
+            iconSize: [5, 5],
+            iconAnchor: [5, 5],
+            popupAnchor: [0, -5]
+        });
+      
+      var fastest_path_icon =L.icon({
+          iconUrl: 'https://toppng.com/uploads/preview/red-circle-red-point-transparent-background-11563241690fqswnj7pqe.png', 
+          iconSize: [5, 5],
+          iconAnchor: [5, 5],
+          popupAnchor: [0, -5]
+      });
+
+      var marker = L.marker([{{ landfill.latitude }},{{ landfill.longitude }}],{icon: landfill_icon}).addTo(map)
+      marker.bindPopup('{{ landfill.address }}')
+
+      var marker = L.marker([{{ sts.latitude }},{{ sts.longitude }}],{icon: sts_icon}).addTo(map)
+      marker.bindPopup('{{ sts.address }}')
+    
+      {% for path in shortest_path %}
+      var marker = L.marker([{{ path.1 }},{{ path.0 }}],{icon: shortest_path_icon}).addTo(map)
+      marker.bindPopup('shortest path')
+      {% endfor %}
+
+      {% for path in fastest_path %}
+      var marker = L.marker([{{ path.1 }},{{ path.0 }}],{icon: fastest_path_icon}).addTo(map)
+      marker.bindPopup('fastest path')
+      {% endfor %}
+
+    
+  </script>
+{% endblock %}

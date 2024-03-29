@@ -10,6 +10,8 @@ from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 
+from django.urls import reverse
+
 from core.utils import is_system_admin, is_sts_manager, is_landfill_manager
 from .forms import *
 from .models import *
@@ -87,28 +89,68 @@ def add_vehicle(request):
 
 
 @user_passes_test(is_sts_manager)
-def add_waste_transfer(request):
+def waste_transfer_start(request):
     if request.method == 'POST':
         form = WasteTransferForm(request.POST)
         if form.is_valid():
             landfill = form.cleaned_data['landfill']
             vehicle = form.cleaned_data['vehicle']
             volume = form.cleaned_data['volume']
-            user = request.user
-            sts = STSManager.objects.filter(user=user).first().sts
             if (volume > vehicle.capacity):
                 messages.error(request, 'Can\'t send Overloaded vehicle')
-                return redirect('add_waste_transfer')
+                return redirect('waste_transfer_start')
+
+            data = {
+                'landfill': landfill.id,
+                'vehicle': vehicle.id,
+                'volume': volume
+            }
+
+            redirect_url = reverse('waste_transfer_start_complete') + '?' + \
+                '&'.join([f"{key}={value}" for key, value in data.items()])
+            print('redirect_url', redirect_url)
+            return redirect(redirect_url)
+            # user = request.user
+            # sts = STSManager.objects.filter(user=user).first().sts
+
+    else:
+        form = WasteTransferForm()
+    return render(request, 'sts_manager/add_wasteTransfer.html', {'form': form})
+
+
+@user_passes_test(is_sts_manager)
+def waste_transfer_start_complete(request):
+    user = request.user
+    sts = STSManager.objects.filter(user=user).first().sts
+    landfill = get_object_or_404(Landfill, id=request.GET.get('landfill'))
+    vehicle = get_object_or_404(Vehicle, id=request.GET.get('vehicle'))
+    volume = request.GET.get('volume')
+
+    if request.method == 'POST':
+        form = WasteTransferForm_Path(sts, landfill, request.POST)
+        if form.is_valid():
+            path = form.cleaned_data['path']
             new_transfer = WasteTransfer(
-                sts=sts, landfill=landfill, vehicle=vehicle, volume=volume)
+                sts=sts, landfill=landfill, vehicle=vehicle, volume=volume, path=path)
             new_transfer.status = 'Sending to Landfill'
             new_transfer.departure_from_sts = timezone.now()
             new_transfer.save()
             messages.success(request, f"Sent new Transfer to {landfill}")
-            return redirect('add_waste_transfer')
-    else:
-        form = WasteTransferForm()
-    return render(request, 'sts_manager/add_wasteTransfer.html', {'form': form})
+            return redirect('dashboard')
+
+    form = WasteTransferForm_Path(sts, landfill)
+    shortest_path = json.loads(Path.objects.get(
+        sts=sts, landfill=landfill, OptimizeFor="ShortestRoute").points)['PathList']
+
+    fastest_path = json.loads(Path.objects.get(
+        sts=sts, landfill=landfill, OptimizeFor="FastestRoute").points)['PathList']
+    return render(request, 'sts_manager/add_wasteTransfer_complete.html', {
+        'form': form,
+        'shortest_path': shortest_path,
+        'fastest_path': fastest_path,
+        'sts': sts,
+        'landfill': landfill,
+    })
 
 
 @user_passes_test(is_landfill_manager)

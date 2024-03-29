@@ -192,6 +192,9 @@ class Path(models.Model):
         max_digits=10, decimal_places=2, null=True, blank=True)
     TimeUnit = models.CharField(max_length=20, null=True, blank=True)
 
+    def __str__(self):
+        return f"{self.OptimizeFor} ({self.sts} <-> {self.landfill}) {self.DriveDistance}km {self.DriveTime} minute"
+
     class Meta:
         unique_together = ['sts', 'landfill', 'OptimizeFor', 'AvoidTolls']
 
@@ -227,6 +230,7 @@ class WasteTransfer(models.Model):
         choices=WASTE_TRANSFER_STATUS_CHOICES,
         default='Pending'
     )
+    path = models.ForeignKey(Path, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"Transfer from {self.sts} departure at {self.departure_from_sts}"
