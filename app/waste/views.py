@@ -12,16 +12,40 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 
 from django.urls import reverse
 
-from core.utils import is_system_admin, is_sts_manager, is_landfill_manager
+from core.utils import (
+    is_system_admin,
+    is_sts_manager,
+    is_landfill_manager
+)
 from .forms import *
 from .models import *
+
+
+def calculate_fuel_cost(transfer_id):
+    transfer = get_object_or_404(WasteTransfer, id=transfer_id)
+    carried_volume = transfer.volume
+
+    path = transfer.path
+    distance = path.DriveDistance
+
+    vehicle = transfer.vehicle
+    loaded_cost = vehicle.loaded_fuel_cost_per_km
+    unloaded_cost = vehicle.unloaded_fuel_cost_per_km
+    vehicle_capacity = vehicle.capacity
+
+    cost_driving_unloaded = (unloaded_cost*distance)
+    cost_driving_loaded = (loaded_cost*distance)
+
+    arrival_cost = cost_driving_unloaded + \
+        (cost_driving_loaded-cost_driving_unloaded) * \
+        (carried_volume/vehicle_capacity)
+    return arrival_cost, cost_driving_unloaded
 
 
 def waste_transfer_generate_bill(request, transfer_id):
     transfer = WasteTransfer.objects.get(id=transfer_id)
     buf = io.BytesIO()
     doc = SimpleDocTemplate(buf, pagesize=letter)
-
     styles = getSampleStyleSheet()
     title_style = styles['Title']
     normal_style = styles['Normal']
@@ -29,6 +53,11 @@ def waste_transfer_generate_bill(request, transfer_id):
         name='CustomStyle', fontSize=14, textColor=colors.black, spaceBefore=20, spaceAfter=10)
     custom_child_style = ParagraphStyle(
         name='CustomStyle', fontSize=14, textColor=colors.black, spaceBefore=10, spaceAfter=10, leftIndent=20)
+
+    arrival_cost, return_cost = calculate_fuel_cost(transfer_id)
+
+    arrival_cost = "{:.2f}".format(arrival_cost)
+    return_cost = "{:.2f}".format(return_cost)
 
     content = []
 
@@ -57,8 +86,13 @@ def waste_transfer_generate_bill(request, transfer_id):
     content.append(Paragraph(
         "Start Journey Time: {}".format(transfer.departure_from_sts), custom_style))
     content.append(
-        Paragraph("Volume: {}".format(transfer.volume), custom_style))
-    content.append(Paragraph("Amount: {}".format(100), custom_style))
+        Paragraph("Carried Weight: {}".format(transfer.volume), custom_style))
+    content.append(
+        Paragraph("Truck Arrival Cost: {}".format(arrival_cost), custom_style))
+    content.append(
+        Paragraph("Truck Return Cost: {}".format(return_cost), custom_style))
+    content.append(
+        Paragraph("<b>Total Cost: {}</b>".format(return_cost+arrival_cost), custom_style))
 
     for i in range(5):
         content.append(Paragraph("".format(), custom_style))
