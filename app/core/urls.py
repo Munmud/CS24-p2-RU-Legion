@@ -21,7 +21,8 @@ urlpatterns = [
          auth_app.ChangePassword, name="change_password"),
     path('auth/change-user-password/',
          auth_app.ChangePasswordByUser, name="change_user_password"),
-
+    path('auth/update-profile/',
+         auth_app.update_profile, name="update_profile"),
 
     # Ststem Admin
     path('system_admin/add_vehicle/', waste_app.add_vehicle, name="add_vehicle"),

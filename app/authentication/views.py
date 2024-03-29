@@ -12,7 +12,7 @@ from django.contrib.auth.decorators import login_required
 
 from core.utils import is_system_admin
 from .tasks import send_forget_password_mail
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, ProfileUpdateForm
 from .models import Profile
 
 
@@ -114,7 +114,7 @@ def ForgetPassword(request):
             profile_obj = Profile.objects.get(user=user_obj)
             profile_obj.forget_password_token = token
             profile_obj.save()
-            result = send_forget_password_mail.delay(user_obj.email, token)
+            result = send_forget_password_mail.delay(profile_obj.email, token)
             print(result)
             messages.success(request, 'An email is sent.')
             return redirect('forget-password')
@@ -147,3 +147,18 @@ def ChangePasswordByUser(request):
     except Exception as e:
         print(e)
     return render(request, 'change-password.html', context)
+
+
+@login_required
+def update_profile(request):
+    user = request.user
+    if request.method == 'POST':
+        Profile.objects.get(user=user)
+        form = ProfileUpdateForm(
+            request.POST, instance=Profile.objects.get(user=user))
+        if form.is_valid():
+            form.save()
+            return redirect('update_profile')
+    else:
+        form = ProfileUpdateForm(instance=Profile.objects.get(user=user))
+    return render(request, 'common/update_profile.html', {'form': form})
