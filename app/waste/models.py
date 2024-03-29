@@ -4,6 +4,42 @@ from django.dispatch import receiver
 from django.contrib.auth.models import Group, Permission
 from django.conf import settings
 
+from core.utils import aws_map_route_api
+import json
+
+
+def add_to_path(sts, landfill):
+    OptimizeForList = ['FastestRoute', 'ShortestRoute']
+    for OptimizeFor in OptimizeForList:
+        if Path.objects.filter(
+            sts=sts,
+            landfill=landfill,
+            OptimizeFor=OptimizeFor
+        ).exists():
+            return
+        res = aws_map_route_api(
+            source_lat=sts.latitude,
+            source_lon=sts.longitude,
+            dest_lat=landfill.latitude,
+            dest_lon=landfill.longitude,
+            OptimizeFor=OptimizeFor
+        )
+        DriveDistance = res['DriveDistance']
+        DistanceUnit = res['DistanceUnit']
+        DriveTime = res['DriveTime']
+        TimeUnit = res['TimeUnit']
+        PathList = json.dumps({"PathList": res['PathList']})
+        path, created = Path.objects.get_or_create(
+            sts=sts,
+            landfill=landfill,
+            OptimizeFor=OptimizeFor,
+            DriveDistance=DriveDistance,
+            DistanceUnit=DistanceUnit,
+            DriveTime=DriveTime,
+            TimeUnit=TimeUnit,
+            points=PathList
+        )
+
 
 VEHICLE_TYPES = [
     ('Open Truck', 'Open Truck'),
@@ -46,6 +82,11 @@ WASTE_TRANSFER_STATUS_CHOICES = [
     ('Cancelled', 'Cancelled'),
 ]
 
+PATH_OPTIMIZE_CHOICES = (
+    ('FastestRoute', 'FastestRoute'),
+    ('ShortestRoute', 'ShortestRoute'),
+)
+
 
 class Vehicle(models.Model):
     vehicle_number = models.CharField(max_length=20, unique=True)
@@ -62,11 +103,6 @@ class Vehicle(models.Model):
         return f"{self.capacity} tons {self.type} {self.vehicle_number}"
 
 
-class Point(models.Model):
-    latitude = models.DecimalField(max_digits=9, decimal_places=6)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6)
-
-
 class STS(models.Model):
     zone = models.IntegerField()
     ward = models.IntegerField()
@@ -77,6 +113,16 @@ class STS(models.Model):
 
     def __str__(self):
         return f"{self.address}"
+
+    class Meta:
+        unique_together = ['latitude', 'longitude']
+
+
+@receiver(models.signals.post_save, sender=STS)
+def create_sts(sender, instance, created, **kwargs):
+    if created:
+        for landfill in Landfill.objects.all():
+            add_to_path(instance, landfill)
 
 
 class STSManager(models.Model):
@@ -113,6 +159,16 @@ class Landfill(models.Model):
     def __str__(self):
         return f"{self.address}"
 
+    class Meta:
+        unique_together = ['latitude', 'longitude']
+
+
+@receiver(models.signals.post_save, sender=Landfill)
+def create_Landfill(sender, instance, created, **kwargs):
+    if created:
+        for sts in STS.objects.all():
+            add_to_path(sts, instance)
+
 
 class LandfillManager(models.Model):
     landfill = models.ForeignKey(Landfill, on_delete=models.CASCADE)
@@ -124,8 +180,20 @@ class LandfillManager(models.Model):
 
 class Path(models.Model):
     sts = models.ForeignKey(STS, on_delete=models.CASCADE)
-    landfill = models.ForeignKey(Landfill, on_delete=models.DO_NOTHING)
-    points = models.ManyToManyField(Point)
+    landfill = models.ForeignKey(Landfill, on_delete=models.CASCADE)
+    points = models.TextField()
+    OptimizeFor = models.CharField(
+        max_length=20, choices=PATH_OPTIMIZE_CHOICES)
+    AvoidTolls = models.BooleanField(default=False)
+    DriveDistance = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True)
+    DistanceUnit = models.CharField(max_length=20, null=True, blank=True)
+    DriveTime = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True)
+    TimeUnit = models.CharField(max_length=20, null=True, blank=True)
+
+    class Meta:
+        unique_together = ['sts', 'landfill', 'OptimizeFor', 'AvoidTolls']
 
 
 @receiver(models.signals.post_save, sender=LandfillManager)

@@ -2,6 +2,9 @@ from django.contrib import admin
 from .models import *
 
 
+admin.site.register(Path)
+
+
 class WasteTransferAdmin(admin.ModelAdmin):
     list_display = [field.name for field in WasteTransfer._meta.fields]
     list_per_page = 20
