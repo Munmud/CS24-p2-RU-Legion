@@ -8,7 +8,7 @@
           <p>Dashboard</p>
         </a>
         {% if request.user|has_group:'System Admin' %}
-          <a href="admin/" style="margin-top: 10px;">
+          <a href="/admin" style="margin-top: 10px;">
             <i class="fa fa-cogs"></i>
             <p>Admin Dashboard</p>
           </a>
@@ -19,6 +19,11 @@
             <p>Transfer Waste</p>
           </a>
         {% endif %}
+
+        <a href="{% url 'change_user_password' %}" style="margin-top: 10px;">
+          <i class="now-ui-icons ui-1_lock-circle-open"></i>
+          <p>Change Password</p>
+        </a>
 
         <a href="{% url 'logout' %}" style="margin-top: 10px;">
           <i class="now-ui-icons media-1_button-power"></i>

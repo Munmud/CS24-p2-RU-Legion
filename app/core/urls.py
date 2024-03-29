@@ -11,6 +11,7 @@ from .views import dashboard
 urlpatterns = [
     path('admin/', admin.site.urls, name='admin_dashboard'),
 
+
     # auth
     path('auth/login', auth_app.user_login, name='login'),
     path('auth/logout', auth_app.user_logout, name='logout'),
@@ -18,6 +19,9 @@ urlpatterns = [
     path('auth/forget-password/', auth_app.ForgetPassword, name="forget_password"),
     path('auth/change-password/<token>/',
          auth_app.ChangePassword, name="change_password"),
+    path('auth/change-user-password/',
+         auth_app.ChangePasswordByUser, name="change_user_password"),
+
 
     # Ststem Admin
     path('system_admin/add_vehicle/', waste_app.add_vehicle, name="add_vehicle"),

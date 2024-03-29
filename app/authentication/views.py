@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.contrib.auth.models import Group
+from django.contrib.auth.decorators import login_required
 
 from core.utils import is_system_admin
 from .tasks import send_forget_password_mail
@@ -121,3 +122,28 @@ def ForgetPassword(request):
     except Exception as e:
         print(e)
     return render(request, 'forget-password.html')
+
+
+@login_required
+def ChangePasswordByUser(request):
+    context = {}
+    try:
+        context = {'user_id': request.user.id}
+        if request.method == 'POST':
+            new_password = request.POST.get('new_password')
+            confirm_password = request.POST.get('reconfirm_password')
+            user_id = request.POST.get('user_id')
+
+            if new_password != confirm_password:
+                messages.error(request, 'both should  be equal.')
+                return redirect(f'change_user_password')
+
+            user_obj = User.objects.get(id=user_id)
+            user_obj.set_password(new_password)
+            user_obj.save()
+            messages.success(request, 'Password change successful')
+            return redirect('dashboard')
+
+    except Exception as e:
+        print(e)
+    return render(request, 'change-password.html', context)
