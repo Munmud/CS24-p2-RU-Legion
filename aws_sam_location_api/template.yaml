@@ -1,0 +1,63 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  munmudlocation
+
+  Sample SAM Template for munmudlocation
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 128
+
+Resources:
+  RouteCalculator:
+    Type: AWS::Location::RouteCalculator
+    Properties:
+      DataSource: Esri
+      CalculatorName:
+        Fn::Sub: ${AWS::StackName}-routecalculator
+  CalculateRoutesLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: route_calculator/
+      Handler: app.lambda_handler
+      Runtime: python3.11
+      Role: !GetAtt CalculateRoutesLambdaRole.Arn
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          ROUTE_CALCULATOR:
+            Ref: RouteCalculator
+      # Events:
+      #   CalculateRoutesLambda:
+      #     Type: Api
+      #     Properties:
+      #       Path: /hello
+      #       Method: get
+  CalculateRoutesLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName:
+            Fn::Sub: ${AWS::StackName}-CalculateRoutes-Redshift-policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - geo:CalculateRoute
+                Resource:
+                  - Fn::GetAtt: [RouteCalculator, CalculatorArn]
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole

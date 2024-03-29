@@ -11,6 +11,7 @@
         <th>Volume</th>
         <th>Status</th>
         <th>Actions</th>
+        <th>Bill</th>
       </tr>
       {% for transfer in waste_transfers %}
         <tr>
@@ -25,6 +26,9 @@
             {% elif transfer.status == 'Dumping in Landfill' %}
               <a href="{% url 'waste_transfer_end_dumping' transfer.id %}">End Dumping Waste</a>
             {% endif %}
+          </td>
+          <td>
+            <a href="{% url 'waste_transfer_generate_bill' transfer.id %}">Download</a>
           </td>
         </tr>
       {% endfor %}

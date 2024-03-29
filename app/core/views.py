@@ -16,7 +16,11 @@ from .utils import is_sts_manager, is_system_admin, is_landfill_manager
 def dashboard(request):
     if is_system_admin(request.user):
         sts_list = STS.objects.all()
-        return render(request, 'system_admin/dashboard.html', {'sts_list': sts_list})
+        landfill_list = Landfill.objects.all()
+        return render(request, 'system_admin/dashboard.html', {
+            'sts_list': sts_list,
+            'landfill_list': landfill_list
+        })
 
     elif is_sts_manager(request.user):
         sts = STSManager.objects.get(user=request.user).sts

@@ -3,9 +3,74 @@ from django.contrib.auth.decorators import user_passes_test
 from django.utils import timezone
 from django.contrib import messages
 
+import io
+from django.http import FileResponse
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+
 from core.utils import is_system_admin, is_sts_manager, is_landfill_manager
 from .forms import *
 from .models import *
+
+
+def waste_transfer_generate_bill(request, transfer_id):
+    transfer = WasteTransfer.objects.get(id=transfer_id)
+    buf = io.BytesIO()
+    doc = SimpleDocTemplate(buf, pagesize=letter)
+
+    styles = getSampleStyleSheet()
+    title_style = styles['Title']
+    normal_style = styles['Normal']
+    custom_style = ParagraphStyle(
+        name='CustomStyle', fontSize=14, textColor=colors.black, spaceBefore=20, spaceAfter=10)
+    custom_child_style = ParagraphStyle(
+        name='CustomStyle', fontSize=14, textColor=colors.black, spaceBefore=10, spaceAfter=10, leftIndent=20)
+
+    content = []
+
+    content.append(
+        Paragraph("{}".format(transfer.landfill), title_style))
+
+    content.append(
+        Paragraph("Transfer Id : {}".format(transfer.id), custom_style))
+
+    content.append(
+        Paragraph("STS : {}".format(transfer.sts), custom_style))
+
+    content.append(
+        Paragraph("Vehicle Details:".format(transfer.vehicle), custom_style))
+    content.append(Paragraph("Number: {}".format(
+        transfer.vehicle.vehicle_number), custom_child_style))
+    content.append(Paragraph("Type: {}".format(
+        transfer.vehicle.type), custom_child_style))
+    content.append(Paragraph("Capacity: {}".format(
+        transfer.vehicle.capacity), custom_child_style))
+    content.append(Paragraph("Loaded Fuel Cost (per km): {}".format(
+        transfer.vehicle.loaded_fuel_cost_per_km), custom_child_style))
+    content.append(Paragraph("Unloaded Fuel Cost (per km): {}".format(
+        transfer.vehicle.unloaded_fuel_cost_per_km), custom_child_style))
+
+    content.append(Paragraph(
+        "Start Journey Time: {}".format(transfer.departure_from_sts), custom_style))
+    content.append(
+        Paragraph("Volume: {}".format(transfer.volume), custom_style))
+    content.append(Paragraph("Amount: {}".format(100), custom_style))
+
+    for i in range(5):
+        content.append(Paragraph("".format(), custom_style))
+
+    content.append(Paragraph("requested by: {}".format(
+        request.user.username), normal_style))
+    content.append(Paragraph("printed time: {}".format(
+        timezone.now()), normal_style))
+
+    doc.build(content)
+
+    buf.seek(0)
+
+    return FileResponse(buf, as_attachment=True, filename=f'trasnfer_{transfer.id}.pdf')
 
 
 @user_passes_test(is_system_admin)

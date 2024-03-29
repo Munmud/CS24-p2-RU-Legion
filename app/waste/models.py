@@ -23,6 +23,11 @@ CAPACITY_CHOICES = [
     (8, '8 ton'),
     (9, '9 ton'),
     (10, '10 ton'),
+    (11, '11 ton'),
+    (12, '12 ton'),
+    (13, '13 ton'),
+    (14, '14 ton'),
+    (15, '15 ton'),
 ]
 
 VEHICLE_STATUS_CHOICES = [
