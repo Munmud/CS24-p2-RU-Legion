@@ -3,42 +3,12 @@ from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.contrib.auth.models import Group, Permission
 from django.conf import settings
+from celery import shared_task
+from django.shortcuts import get_object_or_404
+from django.db import transaction
 
 from core.utils import aws_map_route_api
 import json
-
-
-def add_to_path(sts, landfill):
-    OptimizeForList = ['FastestRoute', 'ShortestRoute']
-    for OptimizeFor in OptimizeForList:
-        if Path.objects.filter(
-            sts=sts,
-            landfill=landfill,
-            OptimizeFor=OptimizeFor
-        ).exists():
-            return
-        res = aws_map_route_api(
-            source_lat=sts.latitude,
-            source_lon=sts.longitude,
-            dest_lat=landfill.latitude,
-            dest_lon=landfill.longitude,
-            OptimizeFor=OptimizeFor
-        )
-        DriveDistance = res['DriveDistance']
-        DistanceUnit = res['DistanceUnit']
-        DriveTime = res['DriveTime']
-        TimeUnit = res['TimeUnit']
-        PathList = json.dumps({"PathList": res['PathList']})
-        path, created = Path.objects.get_or_create(
-            sts=sts,
-            landfill=landfill,
-            OptimizeFor=OptimizeFor,
-            DriveDistance=DriveDistance,
-            DistanceUnit=DistanceUnit,
-            DriveTime=DriveTime,
-            TimeUnit=TimeUnit,
-            points=PathList
-        )
 
 
 VEHICLE_TYPES = [
@@ -118,13 +88,6 @@ class STS(models.Model):
         unique_together = ['latitude', 'longitude']
 
 
-@receiver(models.signals.post_save, sender=STS)
-def create_sts(sender, instance, created, **kwargs):
-    if created:
-        for landfill in Landfill.objects.all():
-            add_to_path(instance, landfill)
-
-
 class STSManager(models.Model):
     sts = models.ForeignKey(STS, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -163,11 +126,57 @@ class Landfill(models.Model):
         unique_together = ['latitude', 'longitude']
 
 
+@shared_task
+def add_to_path(sts_id, landfill_id):
+    with transaction.atomic():
+        sts = get_object_or_404(STS, id=sts_id)
+        landfill = get_object_or_404(Landfill, id=landfill_id)
+        OptimizeForList = ['FastestRoute', 'ShortestRoute']
+        for OptimizeFor in OptimizeForList:
+            if Path.objects.filter(
+                sts=sts,
+                landfill=landfill,
+                OptimizeFor=OptimizeFor
+            ).exists():
+                return
+            res = aws_map_route_api(
+                source_lat=sts.latitude,
+                source_lon=sts.longitude,
+                dest_lat=landfill.latitude,
+                dest_lon=landfill.longitude,
+                OptimizeFor=OptimizeFor
+            )
+            DriveDistance = res['DriveDistance']
+            DistanceUnit = res['DistanceUnit']
+            DriveTime = res['DriveTime']
+            TimeUnit = res['TimeUnit']
+            PathList = json.dumps({"PathList": res['PathList']})
+            path, created = Path.objects.get_or_create(
+                sts=sts,
+                landfill=landfill,
+                OptimizeFor=OptimizeFor,
+                DriveDistance=DriveDistance,
+                DistanceUnit=DistanceUnit,
+                DriveTime=DriveTime,
+                TimeUnit=TimeUnit,
+                points=PathList
+            )
+
+
+@receiver(models.signals.post_save, sender=STS)
+def create_sts(sender, instance, created, **kwargs):
+    if created:
+        for landfill in Landfill.objects.all():
+            add_to_path.apply_async(
+                args=[instance.id, landfill.id], countdown=10)
+
+
 @receiver(models.signals.post_save, sender=Landfill)
 def create_Landfill(sender, instance, created, **kwargs):
     if created:
         for sts in STS.objects.all():
-            add_to_path(sts, instance)
+            add_to_path.apply_async(
+                args=[sts.id, instance.id], countdown=10)
 
 
 class LandfillManager(models.Model):
