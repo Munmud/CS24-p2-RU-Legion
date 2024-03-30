@@ -57,6 +57,11 @@ PATH_OPTIMIZE_CHOICES = (
     ('ShortestRoute', 'ShortestRoute'),
 )
 
+WASTE_TRANSFER_QUEUE_STATUS_CHOICES = [
+    ('Pending', 'Pending'),
+    ('Completed', 'Completed'),
+]
+
 
 class Vehicle(models.Model):
     vehicle_number = models.CharField(max_length=20, unique=True)
@@ -293,3 +298,16 @@ def update_vehicle_status(sender, instance, created, **kwargs):
         instance.vehicle.save()
     if created:
         add_transfer_cost.delay(instance.id)
+
+
+class WasteTransferQueue(models.Model):
+    sts = models.ForeignKey(STS, on_delete=models.CASCADE)
+    landfill = models.ForeignKey(Landfill, on_delete=models.CASCADE)
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
+    volume = models.DecimalField(max_digits=10, decimal_places=2)
+    path = models.ForeignKey(Path, on_delete=models.CASCADE)
+    status = models.CharField(
+        max_length=20,
+        choices=WASTE_TRANSFER_QUEUE_STATUS_CHOICES,
+        default='Pending'
+    )

@@ -37,6 +37,13 @@ urlpatterns = [
     path('sts_manager/transfer_waste/complete/<int:transfer_id>',
          waste_app.waste_transfer_complete, name="waste_transfer_complete"),
 
+    path('sts_manager/transfer_waste/create_fleet_step_1',
+         waste_app.create_fleet_step_1, name="create_fleet_step_1"),
+
+    path('sts_manager/transfer_waste/create_fleet_step_2',
+         waste_app.create_fleet_step_2, name="create_fleet_step_2"),
+
+
     # landfill manager
     path('landfill_manager/transfer_waste/dump_start/<int:transfer_id>',
          waste_app.waste_transfer_start_dumping, name="waste_transfer_start_dumping"),

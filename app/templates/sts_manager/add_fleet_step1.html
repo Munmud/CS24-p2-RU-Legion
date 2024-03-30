@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block content %}
+  <div class="content" style=" text-align: center; margin: 0 auto;">
+    <h2>Create Fleet (step - 1)</h2>
+    <form method="post">
+      {% csrf_token %}
+      <label for="total_waste">Total Waste:</label>
+      <input type="number" id="total_waste" name="total_waste" step="0.01" min="0" />
+
+      <br /><br />
+
+      <label for="landfill">Choose an landfill:</label>
+      <select name="landfill" id="landfill">
+        {% for landfill in landfills %}
+          <option value="{{ landfill.id }}">{{ landfill }}</option>
+        {% endfor %}
+      </select>
+      <br /><br />
+      <input type="submit" value="Next" />
+    </form>
+  </div>
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}

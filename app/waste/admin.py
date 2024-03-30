@@ -13,6 +13,14 @@ class WasteTransferAdmin(admin.ModelAdmin):
 admin.site.register(WasteTransfer, WasteTransferAdmin)
 
 
+class WasteTransferQueueAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in WasteTransferQueue._meta.fields]
+    list_per_page = 20
+
+
+admin.site.register(WasteTransferQueue, WasteTransferQueueAdmin)
+
+
 class LandfillAdmin(admin.ModelAdmin):
     list_display = [field.name for field in Landfill._meta.fields]
     list_per_page = 20

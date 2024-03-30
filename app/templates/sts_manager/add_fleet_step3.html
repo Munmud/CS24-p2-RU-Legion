@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block content %}
+  <div class="content" style=" text-align: center; margin: 0 auto;">
+    <h2>Create Fleet (step - 2)</h2>
+    <label for="vehicles">Select vehicles:</label><br />
+    <form method="post">
+      {% csrf_token %}
+      {% for vehicle in vehicles %}
+        <input type="checkbox" id="vehicle_{{ vehicle.id }}" name="vehicles" value="{{ vehicle.id }}" />
+        <label for="vehicle_{{ vehicle.id }}">{{ vehicle }}</label><br />
+      {% endfor %}
+      <br /><br />
+      <input type="submit" value="Create Fleet" />
+    </form>
+  </div>
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}
