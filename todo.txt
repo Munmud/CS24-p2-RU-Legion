@@ -2,7 +2,6 @@ web
 -----------------
 Daily fuel cost statistics for the trucks
 fleet optimization
-transportation activities (admin)
 waste collection statistics at each STS and Landfill site
 capcha
 realtime vehicle tracking

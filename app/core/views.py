@@ -18,14 +18,17 @@ def dashboard(request):
     if is_system_admin(request.user):
         sts_list = STS.objects.all()
         landfill_list = Landfill.objects.all()
+        ongoing_waste_transfers = WasteTransfer.objects.exclude(
+            status='Completed').order_by('-id').all()
         return render(request, 'system_admin/dashboard.html', {
             'sts_list': sts_list,
-            'landfill_list': landfill_list
+            'landfill_list': landfill_list,
+            'ongoing_waste_transfers': ongoing_waste_transfers
         })
 
     elif is_sts_manager(request.user):
         sts = STSManager.objects.get(user=request.user).sts
-        waste_transfers = WasteTransfer.objects.exclude(
+        waste_transfers = WasteTransfer.objects.filter(sts=sts).exclude(
             status='Completed').order_by('-id').all()
         return render(request, 'sts_manager/dashboard.html', {
             'sts': sts,
@@ -34,7 +37,7 @@ def dashboard(request):
 
     elif is_landfill_manager(request.user):
         landfill = LandfillManager.objects.get(user=request.user).landfill
-        waste_transfers = WasteTransfer.objects.exclude(
+        waste_transfers = WasteTransfer.objects.filter(landfill=landfill).exclude(
             status='Completed').order_by('-id').all()
         return render(request, 'landfill_manager/dashboard.html', {
             'landfill': landfill,
