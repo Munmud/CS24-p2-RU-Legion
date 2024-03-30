@@ -22,28 +22,6 @@ from .forms import *
 from .models import *
 
 
-def calculate_fuel_cost(transfer_id):
-    fuel_cost_per_litre = settings.FUEL_COST_PER_LITRE
-    transfer = get_object_or_404(WasteTransfer, id=transfer_id)
-    carried_volume = transfer.volume
-
-    path = transfer.path
-    distance = path.DriveDistance
-
-    vehicle = transfer.vehicle
-    loaded_cost = vehicle.loaded_fuel_cost_per_km
-    unloaded_cost = vehicle.unloaded_fuel_cost_per_km
-    vehicle_capacity = vehicle.capacity
-
-    cost_driving_unloaded = (unloaded_cost*distance*fuel_cost_per_litre)
-    cost_driving_loaded = (loaded_cost*distance*fuel_cost_per_litre)
-
-    arrival_cost = cost_driving_unloaded + \
-        (cost_driving_loaded-cost_driving_unloaded) * \
-        (carried_volume/vehicle_capacity)
-    return arrival_cost, cost_driving_unloaded
-
-
 def waste_transfer_generate_bill(request, transfer_id):
     transfer = WasteTransfer.objects.get(id=transfer_id)
     buf = io.BytesIO()
@@ -56,12 +34,9 @@ def waste_transfer_generate_bill(request, transfer_id):
     custom_child_style = ParagraphStyle(
         name='CustomStyle', fontSize=14, textColor=colors.black, spaceBefore=10, spaceAfter=10, leftIndent=20)
 
-    arrival_cost, return_cost = calculate_fuel_cost(transfer_id)
-    total_cost = arrival_cost+return_cost
-
-    arrival_cost = "{:.2f}".format(arrival_cost)
-    return_cost = "{:.2f}".format(return_cost)
-    total_cost = "{:.2f}".format(total_cost)
+    arrival_cost = "{:.2f}".format(transfer.arrival_cost)
+    return_cost = "{:.2f}".format(transfer.return_cost)
+    total_cost = "{:.2f}".format(transfer.total_cost)
 
     content = []
 
@@ -80,7 +55,7 @@ def waste_transfer_generate_bill(request, transfer_id):
         transfer.vehicle.vehicle_number), custom_child_style))
     content.append(Paragraph("Type: {}".format(
         transfer.vehicle.type), custom_child_style))
-    content.append(Paragraph("Capacity: {}".format(
+    content.append(Paragraph("Capacity: {} ton".format(
         transfer.vehicle.capacity), custom_child_style))
     content.append(Paragraph("Loaded Fuel Cost (per km): {}".format(
         transfer.vehicle.loaded_fuel_cost_per_km), custom_child_style))
@@ -89,8 +64,12 @@ def waste_transfer_generate_bill(request, transfer_id):
 
     content.append(Paragraph(
         "Start Journey Time: {}".format(transfer.departure_from_sts), custom_style))
+    content.append(Paragraph(
+        "Journey Duration: {}".format(transfer.path.DriveTime), custom_style))
+    content.append(Paragraph(
+        "Journey Distance: {}".format(transfer.path.DriveDistance), custom_style))
     content.append(
-        Paragraph("Carried Weight: {}".format(transfer.volume), custom_style))
+        Paragraph("Carried Weight: {} ton".format(transfer.volume), custom_style))
     content.append(
         Paragraph("Truck Arrival Cost: {}".format(arrival_cost), custom_style))
     content.append(

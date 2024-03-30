@@ -202,7 +202,7 @@ class Path(models.Model):
     TimeUnit = models.CharField(max_length=20, null=True, blank=True)
 
     def __str__(self):
-        return f"{self.OptimizeFor} ({self.sts} <-> {self.landfill}) {self.DriveDistance}km {self.DriveTime} minute"
+        return f"{self.OptimizeFor} {self.DriveDistance}km {self.DriveTime} minute"
 
     class Meta:
         unique_together = ['sts', 'landfill', 'OptimizeFor', 'AvoidTolls']
@@ -240,9 +240,47 @@ class WasteTransfer(models.Model):
         default='Pending'
     )
     path = models.ForeignKey(Path, on_delete=models.CASCADE)
+    arrival_cost = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0)
+    return_cost = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0)
+    total_cost = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0)
 
     def __str__(self):
         return f"Transfer from {self.sts} departure at {self.departure_from_sts}"
+
+
+def calculate_fuel_cost(transfer_id):
+    fuel_cost_per_litre = settings.FUEL_COST_PER_LITRE
+    transfer = get_object_or_404(WasteTransfer, id=transfer_id)
+    carried_volume = transfer.volume
+
+    path = transfer.path
+    distance = path.DriveDistance
+
+    vehicle = transfer.vehicle
+    loaded_cost = vehicle.loaded_fuel_cost_per_km
+    unloaded_cost = vehicle.unloaded_fuel_cost_per_km
+    vehicle_capacity = vehicle.capacity
+
+    cost_driving_unloaded = (unloaded_cost*distance*fuel_cost_per_litre)
+    cost_driving_loaded = (loaded_cost*distance*fuel_cost_per_litre)
+
+    arrival_cost = cost_driving_unloaded + \
+        (cost_driving_loaded-cost_driving_unloaded) * \
+        (carried_volume/vehicle_capacity)
+    return arrival_cost, cost_driving_unloaded
+
+
+@shared_task
+def add_transfer_cost(transfer_id):
+    arrival_cost, return_cost = calculate_fuel_cost(transfer_id)
+    transfer = get_object_or_404(WasteTransfer, id=transfer_id)
+    transfer.arrival_cost = arrival_cost
+    transfer.return_cost = return_cost
+    transfer.total_cost = arrival_cost+return_cost
+    transfer.save()
 
 
 @receiver(models.signals.post_save, sender=WasteTransfer)
@@ -253,3 +291,5 @@ def update_vehicle_status(sender, instance, created, **kwargs):
     else:
         instance.vehicle.status = 'Available'
         instance.vehicle.save()
+    if created:
+        add_transfer_cost.delay(instance.id)
