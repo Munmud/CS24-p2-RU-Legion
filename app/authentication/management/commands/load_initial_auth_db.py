@@ -87,10 +87,10 @@ def add_permissions_to_landfill_manager_group(self):
 
 
 def add_user1_to_system_admin_group(self):
-    librarian_user = User.objects.get(username=USER_USER1)
+    user = User.objects.get(username=USER_USER1)
     system_admin_group = Group.objects.get(
         name=settings.GROUP_NAME_SYSTEM_ADMIN)
-    librarian_user.groups.add(system_admin_group)
+    user.groups.add(system_admin_group)
 
 
 class Command(BaseCommand):

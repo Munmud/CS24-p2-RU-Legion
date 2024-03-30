@@ -152,6 +152,7 @@ def ChangePasswordByUser(request):
 @login_required
 def update_profile(request):
     user = request.user
+    groups = user.groups.all()
     if request.method == 'POST':
         Profile.objects.get(user=user)
         form = ProfileUpdateForm(
@@ -162,4 +163,4 @@ def update_profile(request):
             return redirect('update_profile')
     else:
         form = ProfileUpdateForm(instance=Profile.objects.get(user=user))
-    return render(request, 'common/update_profile.html', {'form': form})
+    return render(request, 'common/update_profile.html', {'form': form, 'groups': groups})

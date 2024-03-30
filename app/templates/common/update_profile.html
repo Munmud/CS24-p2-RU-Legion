@@ -8,5 +8,11 @@
       {{ form.as_p }}
       <button type="submit">Update</button>
     </form>
+  </br>
+    <h4>Assigned Roles</h4>
+
+    {% for group in groups %}
+      <p>{{ group.name }}</p>
+    {% endfor %}
   </div>
 {% endblock %}

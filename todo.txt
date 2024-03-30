@@ -1,7 +1,5 @@
 web
 -----------------
-Update Billing (fix error)
-In update page : show assigned roles (readonly)
 fleet optimization
 Daily fuel cost statistics for the trucks
 transportation activities (admin)
