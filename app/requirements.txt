@@ -5,6 +5,7 @@ djangorestframework-simplejwt==5.3.1
 redis
 celery
 django-celery-results
+django-celery-beat
 SQLAlchemy
 Pillow
 tqdm
