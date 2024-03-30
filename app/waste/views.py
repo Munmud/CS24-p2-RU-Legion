@@ -312,15 +312,18 @@ def create_fleet_step_2(request):
                 return redirect(current_url)
 
         for vehicle_id in selected_vehicles:
+            vehicle_id = int(vehicle_id)
+            cc = vehicle_counts[vehicle_id]
             vehicle = Vehicle.objects.get(id=vehicle_id)
-            WasteTransferQueue.objects.create(
-                sts=sts,
-                landfill=landfill,
-                vehicle=vehicle,
-                volume=vehicle.capacity,
-                path=Path.objects.get(
-                    sts=sts, landfill=landfill, OptimizeFor='FastestRoute')
-            )
+            for i in range(cc):
+                WasteTransferQueue.objects.create(
+                    sts=sts,
+                    landfill=landfill,
+                    vehicle=vehicle,
+                    volume=vehicle.capacity,
+                    path=Path.objects.get(
+                        sts=sts, landfill=landfill, OptimizeFor='FastestRoute')
+                )
         messages.success(request, 'Added Fleet')
         return redirect('dashboard')
 

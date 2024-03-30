@@ -5,7 +5,7 @@ from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 from django.conf import settings
 
-from report.tasks import schedule_task
+from waste.tasks import schedule_task
 
 
 class Command(BaseCommand):

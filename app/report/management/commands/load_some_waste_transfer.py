@@ -8,7 +8,6 @@ from django.conf import settings
 import random
 from datetime import datetime, timedelta
 from django.utils import timezone
-from report.tasks import schedule_task
 from waste.models import STS, Landfill, STSManager, LandfillManager, WasteTransfer, Vehicle, Path
 
 USER_USER1 = 'user1'
