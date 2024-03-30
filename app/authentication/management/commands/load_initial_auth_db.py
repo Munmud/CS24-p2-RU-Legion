@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 
 from core.utils import create_system_admin
-from waste.models import WasteTransfer
+from waste.models import WasteTransfer, STS, STSManager, Landfill, LandfillManager
 
 USER_USER1 = 'user1'
 USER_USER2 = 'user2'
@@ -14,21 +14,23 @@ USER_ADMIN = 'admin'
 PASSWORD = 'pass'
 
 
-# def create_general_users(self):
-#     users_data = [
-#         {'username': USER_USER1, 'password': PASSWORD},
-#         {'username': USER_USER2, 'password': PASSWORD},
-#     ]
-#     for data in users_data:
-#         username = data['username']
-#         password = data['password']
-#         if not User.objects.filter(username=username).exists():
-#             User.objects.create_user(username=username, password=password)
-#             self.stdout.write(self.style.SUCCESS(
-#                 f'Successfully created user: {username} password: {password}'))
-#         else:
-#             self.stdout.write(self.style.WARNING(
-#                 f'User {username} already exists. Skipping...'))
+def create_general_users(self):
+    users_data = [
+        {'username': USER_USER1, 'password': PASSWORD},
+        {'username': USER_USER2, 'password': PASSWORD},
+    ]
+    for data in users_data:
+        username = data['username']
+        password = data['password']
+        if not User.objects.filter(username=username).exists():
+            User.objects.create_user(username=username, password=password)
+            self.stdout.write(self.style.SUCCESS(
+                f'Successfully created user: {username} password: {password}'))
+        else:
+            self.stdout.write(self.style.WARNING(
+                f'User {username} already exists. Skipping...'))
+
+    return [USER_USER1, USER_USER2]
 
 
 def create_super_user(self):
@@ -42,6 +44,8 @@ def create_super_user(self):
     else:
         self.stdout.write(self.style.WARNING(
             f'User {username} already exists. Skipping...'))
+    user, _ = User.objects.get_or_create(username=username, password=password)
+    return user
 
 
 def create_groups(self):
@@ -97,16 +101,15 @@ class Command(BaseCommand):
     help = 'Creates a superuser'
 
     def handle(self, *args, **kwargs):
-        # create_general_users(self)
-        # create_super_user(self)
         create_groups(self)
         add_permissions_to_system_admin_group(self)
         add_permissions_to_sts_manager_group(self)
         add_permissions_to_landfill_manager_group(self)
-        # add_user1_to_system_admin_group(self)
+
+        # super_user = create_super_user(self)
 
         create_system_admin(
-            username=USER_USER1,
+            username=USER_ADMIN,
             password=PASSWORD,
-            email='moontasir042@gmail.com'
         )
+        create_general_users(self)

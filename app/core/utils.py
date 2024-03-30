@@ -11,10 +11,10 @@ STS_METADATA_CSV = os.path.join(settings.DATA_DIR, "sts.csv")
 VEHICLE_METADATA_CSV = os.path.join(settings.DATA_DIR, "vehicle.csv")
 
 
-def create_system_admin(username, email, password):
+def create_system_admin(username, password):
     if not User.objects.filter(username=username).exists():
         user = User.objects.create_user(
-            username=username, password=password, email=email)
+            username=username, password=password)
         group, created = Group.objects.get_or_create(name='System Admin')
         user.groups.add(group)
         user.is_staff = True

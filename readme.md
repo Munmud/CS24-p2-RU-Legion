@@ -25,8 +25,9 @@ The API will then be available at [http://127.0.0.1:8000](http://127.0.0.1:8000)
 ### Load Initial Data
 
 - `docker-compose run --rm app sh -c "python manage.py start_periodic_report_generation"`
-- `docker-compose run --rm app sh -c "python manage.py load_initial_auth_db"`
 - `docker-compose run --rm app sh -c "python manage.py load_initial_waste_db"`
+- `docker-compose run --rm app sh -c "python manage.py load_initial_auth_db"`
+- `docker-compose run --rm app sh -c "python manage.py load_some_waste_transfer"`
 
 ---
 
