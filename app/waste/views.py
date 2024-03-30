@@ -262,6 +262,7 @@ def recommend_fleet(sts, landfill, total_waste):
     return selected_car, total_cost
 
 
+@user_passes_test(is_sts_manager)
 def create_fleet_step_1(request):
     if request.method == 'POST':
         total_waste = request.POST.get('total_waste')
@@ -283,6 +284,7 @@ def create_fleet_step_1(request):
     })
 
 
+@user_passes_test(is_sts_manager)
 def create_fleet_step_2(request):
     landfill_id = int(request.GET.get('landfill_id'))
     total_waste = int(request.GET.get('total_waste'))
@@ -304,6 +306,11 @@ def create_fleet_step_2(request):
             count = request.POST.get(count_key, 0)
             count = int(count)
             vehicle_counts[vehicle_id] = count
+            if count < 1:
+                current_url = request.get_full_path()
+                vehicle = Vehicle.objects.get(id=vehicle_id)
+                messages.error(
+                    request, f"count must be greater than 0 for {vehicle}")
             if count > 3:
                 current_url = request.get_full_path()
                 vehicle = Vehicle.objects.get(id=vehicle_id)

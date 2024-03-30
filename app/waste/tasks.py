@@ -10,10 +10,13 @@ from .models import WasteTransferQueue, WasteTransfer
 
 @shared_task
 def queue_to_waste_transfer():
-    with transaction.atomic():
-        pending_in_queue = WasteTransferQueue.objects.filter('Pending').all()
-        for transfer in pending_in_queue:
-            if transfer.vehicle.status is not 'Available':
+    pending_in_queue = WasteTransferQueue.objects.filter(
+        status='Pending').all()
+
+    for transfer in pending_in_queue:
+        print("transfer", transfer)
+        with transaction.atomic():
+            if transfer.vehicle.status != 'Available':
                 continue
             new_transfer = WasteTransfer(
                 sts=transfer.sts,
@@ -22,6 +25,7 @@ def queue_to_waste_transfer():
                 path=transfer.path,
                 volume=transfer.volume
             )
+            print("new_transfer", new_transfer)
             new_transfer.status = 'Sending to Landfill'
             new_transfer.departure_from_sts = timezone.now()
             new_transfer.save()
