@@ -6,3 +6,4 @@ transportation activities (admin)
 waste collection statistics at each STS and Landfill site
 capcha
 realtime vehicle tracking
+Update Page Design
