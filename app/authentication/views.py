@@ -9,10 +9,11 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
+from captcha.fields import CaptchaField
 
 from core.utils import is_system_admin
 from .tasks import send_forget_password_mail
-from .forms import CustomUserCreationForm, ProfileUpdateForm
+from .forms import CustomUserCreationForm, ProfileUpdateForm, CaptchaLoginForm
 from .models import Profile
 
 
@@ -33,29 +34,16 @@ def register(request):
 
 def user_login(request):
     if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
+        form = CaptchaLoginForm(request, data=request.POST)
         if form.is_valid():
-
             user = form.get_user()
-            group_names = [
-                settings.GROUP_NAME_SYSTEM_ADMIN,
-                settings.GROUP_NAME_STS_MANAGER,
-                settings.GROUP_NAME_LANDFILL_MANAGER
-            ]
-            user_groups = Group.objects.filter(user=user, name__in=group_names)
-            if not user_groups.exists():
-                messages.error(
-                    request, f"Users are not assigned any group. Please contact system admin")
-                return render(request, 'common/login.html', {'form': form})
-
             login(request, user)
-            messages.success(request, f"Login Successful")
-            # Redirect to dashboard or any other page after login
+            messages.success(request, "Login Successful")
             return redirect('dashboard')
     elif request.user.is_authenticated:
         return redirect('dashboard')
     else:
-        form = AuthenticationForm()
+        form = CaptchaLoginForm()
     return render(request, 'common/login.html', {'form': form})
 
 

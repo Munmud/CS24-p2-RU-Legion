@@ -10,7 +10,7 @@ from .views import dashboard
 
 urlpatterns = [
     path('admin/', admin.site.urls, name='admin_dashboard'),
-
+    path('captcha/', include('captcha.urls')),
 
     # auth
     path('auth/login', auth_app.user_login, name='login'),
