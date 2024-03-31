@@ -15,7 +15,7 @@ urlpatterns = [
     # auth
     path('auth/login', auth_app.user_login, name='login'),
     path('auth/logout', auth_app.user_logout, name='logout'),
-    path('auth/create', auth_app.register, name='register'),
+    #     path('auth/create', auth_app.register, name='register'),
     path('auth/forget-password/', auth_app.ForgetPassword, name="forget_password"),
     path('auth/change-password/<token>/',
          auth_app.ChangePassword, name="change_password"),
@@ -25,7 +25,7 @@ urlpatterns = [
          auth_app.update_profile, name="update_profile"),
 
     # Ststem Admin
-    path('system_admin/add_vehicle/', waste_app.add_vehicle, name="add_vehicle"),
+    #     path('system_admin/add_vehicle/', waste_app.add_vehicle, name="add_vehicle"),
 
     # STS Manager
     path('sts_manager/transfer_waste/start',

@@ -1,31 +1,523 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
-  <div class="content" style=" text-align: center; margin: 0 auto;">
-    <h1>{{ sts }}</h1>
-    <h2>On Going Transfer</h2>
-    <table border="2">
-      <tr>
-        <th>ID</th>
-        <th>Landfill</th>
-        <th>Vehicle</th>
-        <th>Volume</th>
-        <th>Status</th>
-        <th>Actions</th>
-      </tr>
-      {% for transfer in waste_transfers %}
-        <tr>
-          <td>{{ transfer.id }}</td>
-          <td>{{ transfer.landfill }}</td>
-          <td>{{ transfer.vehicle }}</td>
-          <td>{{ transfer.volume }}</td>
-          <td>{{ transfer.status }}</td>
-          <td>
-            {% if transfer.status == 'Returning to STS' %}
-              <a href="{% url 'waste_transfer_complete' transfer.id %}">Vehicle Returned</a>
-            {% endif %}
-          </td>
-        </tr>
-      {% endfor %}
-    </table>
+  <div>
+    <h2 style=" text-align: center; margin: 0 auto;">{{ sts }}</h2>
+    <canvas id="bigDashboardChart"></canvas>
   </div>
+  <div class="content">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="card card-chart">
+          <div class="card-header">
+            <h5 class="card-category">Last 7 Days</h5>
+            <h4 class="card-title">Fuel Cost</h4>
+          </div>
+          <div class="card-body">
+            <div class="chart-area">
+              <canvas id="lineChartExample"></canvas>
+            </div>
+          </div>
+          <div class="card-footer">
+            <div class="stats">
+              <i class="now-ui-icons arrows-1_refresh-69"></i> Just Updated
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card card-chart">
+          <div class="card-header">
+            <h5 class="card-category">Last 7 Days</h5>
+            <h4 class="card-title">Garbage Transfer</h4>
+          </div>
+          <div class="card-body">
+            <div class="chart-area">
+              <canvas id="lineChartExampleWithNumbersAndGrid"></canvas>
+            </div>
+          </div>
+          <div class="card-footer">
+            <div class="stats">
+              <i class="now-ui-icons arrows-1_refresh-69"></i> Just Updated
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-category">Garbage</h5>
+            <h4 class="card-title">Ongoing Garbage Transfer</h4>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table">
+                <thead class="text-primary">
+                  <th>ID</th>
+                  <th>Landfill</th>
+                  <th>Vehicle</th>
+                  <th>Volume</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </thead>
+                <tbody>
+                  {% for transfer in waste_transfers %}
+                    <tr>
+                      <td>{{ transfer.id }}</td>
+                      <td>{{ transfer.landfill }}</td>
+                      <td>{{ transfer.vehicle }}</td>
+                      <td>{{ transfer.volume }}</td>
+                      <td>{{ transfer.status }}</td>
+                      <td>
+                        {% if transfer.status == 'Returning to STS' %}
+                          <a href="{% url 'waste_transfer_complete' transfer.id %}">Vehicle Returned</a>
+                        {% endif %}
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block js %}
+  <script src="{% static 'assets\js\plugins\chartjs.min.js' %}"></script>
+  <!-- Now Ui Dashboard DEMO methods, don't include it in your project! -->
+
+  <script>
+demo = {
+  initPickColor: function () {
+    $(".pick-class-label").click(function () {
+      var new_class = $(this).attr("new-class");
+      var old_class = $("#display-buttons").attr("data-class");
+      var display_div = $("#display-buttons");
+      if (display_div.length) {
+        var display_buttons = display_div.find(".btn");
+        display_buttons.removeClass(old_class);
+        display_buttons.addClass(new_class);
+        display_div.attr("data-class", new_class);
+      }
+    });
+  },
+
+  initDocChart: function () {
+    chartColor = "#FFFFFF";
+
+    // General configuration for the charts with Line gradientStroke
+    gradientChartOptionsConfiguration = {
+      maintainAspectRatio: false,
+      legend: {
+        display: false,
+      },
+      tooltips: {
+        bodySpacing: 4,
+        mode: "nearest",
+        intersect: 0,
+        position: "nearest",
+        xPadding: 10,
+        yPadding: 10,
+        caretPadding: 10,
+      },
+      responsive: true,
+      scales: {
+        yAxes: [
+          {
+            display: 0,
+            gridLines: 0,
+            ticks: {
+              display: false,
+            },
+            gridLines: {
+              zeroLineColor: "transparent",
+              drawTicks: false,
+              display: false,
+              drawBorder: false,
+            },
+          },
+        ],
+        xAxes: [
+          {
+            display: 0,
+            gridLines: 0,
+            ticks: {
+              display: false,
+            },
+            gridLines: {
+              zeroLineColor: "transparent",
+              drawTicks: false,
+              display: false,
+              drawBorder: false,
+            },
+          },
+        ],
+      },
+      layout: {
+        padding: {
+          left: 0,
+          right: 0,
+          top: 15,
+          bottom: 15,
+        },
+      },
+    };
+
+    ctx = document.getElementById("lineChartExample").getContext("2d");
+
+    gradientStroke = ctx.createLinearGradient(500, 0, 100, 0);
+    gradientStroke.addColorStop(0, "#80b6f4");
+    gradientStroke.addColorStop(1, chartColor);
+
+    gradientFill = ctx.createLinearGradient(0, 170, 0, 50);
+    gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
+    gradientFill.addColorStop(1, "rgba(249, 99, 59, 0.40)");
+
+    myChart = new Chart(ctx, {
+      type: "line",
+      responsive: true,
+      data: {
+        labels: [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ],
+        datasets: [
+          {
+            label: "Active Users",
+            borderColor: "#f96332",
+            pointBorderColor: "#FFF",
+            pointBackgroundColor: "#f96332",
+            pointBorderWidth: 2,
+            pointHoverRadius: 4,
+            pointHoverBorderWidth: 1,
+            pointRadius: 4,
+            fill: true,
+            backgroundColor: gradientFill,
+            borderWidth: 2,
+            data: [542, 480, 430, 550, 530, 453, 380, 434, 568, 610, 700, 630],
+          },
+        ],
+      },
+      options: gradientChartOptionsConfiguration,
+    });
+  },
+
+  initDashboardPageCharts: function () {
+    chartColor = "#FFFFFF";
+
+    // General configuration for the charts with Line gradientStroke
+    gradientChartOptionsConfiguration = {
+      maintainAspectRatio: false,
+      legend: {
+        display: false,
+      },
+      tooltips: {
+        bodySpacing: 4,
+        mode: "nearest",
+        intersect: 0,
+        position: "nearest",
+        xPadding: 10,
+        yPadding: 10,
+        caretPadding: 10,
+      },
+      responsive: 1,
+      scales: {
+        yAxes: [
+          {
+            display: 0,
+            gridLines: 0,
+            ticks: {
+              display: false,
+            },
+            gridLines: {
+              zeroLineColor: "transparent",
+              drawTicks: false,
+              display: false,
+              drawBorder: false,
+            },
+          },
+        ],
+        xAxes: [
+          {
+            display: 0,
+            gridLines: 0,
+            ticks: {
+              display: false,
+            },
+            gridLines: {
+              zeroLineColor: "transparent",
+              drawTicks: false,
+              display: false,
+              drawBorder: false,
+            },
+          },
+        ],
+      },
+      layout: {
+        padding: {
+          left: 0,
+          right: 0,
+          top: 15,
+          bottom: 15,
+        },
+      },
+    };
+
+    gradientChartOptionsConfigurationWithNumbersAndGrid = {
+      maintainAspectRatio: false,
+      legend: {
+        display: false,
+      },
+      tooltips: {
+        bodySpacing: 4,
+        mode: "nearest",
+        intersect: 0,
+        position: "nearest",
+        xPadding: 10,
+        yPadding: 10,
+        caretPadding: 10,
+      },
+      responsive: true,
+      scales: {
+        yAxes: [
+          {
+            gridLines: 0,
+            gridLines: {
+              zeroLineColor: "transparent",
+              drawBorder: false,
+            },
+          },
+        ],
+        xAxes: [
+          {
+            display: 0,
+            gridLines: 0,
+            ticks: {
+              display: false,
+            },
+            gridLines: {
+              zeroLineColor: "transparent",
+              drawTicks: false,
+              display: false,
+              drawBorder: false,
+            },
+          },
+        ],
+      },
+      layout: {
+        padding: {
+          left: 0,
+          right: 0,
+          top: 15,
+          bottom: 15,
+        },
+      },
+    };
+
+    var ctx = document.getElementById("bigDashboardChart").getContext("2d");
+
+    var gradientStroke = ctx.createLinearGradient(500, 0, 100, 0);
+    gradientStroke.addColorStop(0, "#80b6f4");
+    gradientStroke.addColorStop(1, chartColor);
+
+    var gradientFill = ctx.createLinearGradient(0, 200, 0, 50);
+    gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
+    gradientFill.addColorStop(1, "rgba(255, 255, 255, 0.24)");
+
+
+
+    var cardStatsMiniLineColor = "#fff",
+      cardStatsMiniDotColor = "#fff";
+
+    ctx = document.getElementById("lineChartExample").getContext("2d");
+
+    gradientStroke = ctx.createLinearGradient(500, 0, 100, 0);
+    gradientStroke.addColorStop(0, "#80b6f4");
+    gradientStroke.addColorStop(1, chartColor);
+
+    gradientFill = ctx.createLinearGradient(0, 170, 0, 50);
+    gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
+    gradientFill.addColorStop(1, "rgba(249, 99, 59, 0.40)");
+
+    myChart = new Chart(ctx, {
+      type: "line",
+      responsive: true,
+      data: {
+        labels: [{% for value in fuel_cost_data_last7_days_keys %}"{{value|date:"m"}}-{{value|date:"d"}}", {% endfor %}],
+        datasets: [
+          {
+            label: "Tk",
+            borderColor: "#f96332",
+            pointBorderColor: "#FFF",
+            pointBackgroundColor: "#f96332",
+            pointBorderWidth: 2,
+            pointHoverRadius: 4,
+            pointHoverBorderWidth: 1,
+            pointRadius: 4,
+            fill: true,
+            backgroundColor: gradientFill,
+            borderWidth: 2,
+            data: [{% for value in fuel_cost_data_last7_days_values %}{{value}}, {% endfor %}],
+          },
+        ],
+      },
+      options: gradientChartOptionsConfiguration,
+    });
+
+    ctx = document
+      .getElementById("lineChartExampleWithNumbersAndGrid")
+      .getContext("2d");
+
+    gradientStroke = ctx.createLinearGradient(500, 0, 100, 0);
+    gradientStroke.addColorStop(0, "#18ce0f");
+    gradientStroke.addColorStop(1, chartColor);
+
+    gradientFill = ctx.createLinearGradient(0, 170, 0, 50);
+    gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
+    gradientFill.addColorStop(1, hexToRGB("#18ce0f", 0.4));
+
+    myChart = new Chart(ctx, {
+      type: "line",
+      responsive: true,
+      data: { 
+        labels: [{% for value in volume_data_last7_days_values %}{{value|date:"Y-m-d H:i:s"}}, {% endfor %}],
+        datasets: [
+          {
+            label: "tons",
+            borderColor: "#18ce0f",
+            pointBorderColor: "#FFF",
+            pointBackgroundColor: "#18ce0f",
+            pointBorderWidth: 2,
+            pointHoverRadius: 4,
+            pointHoverBorderWidth: 1,
+            pointRadius: 4,
+            fill: true,
+            backgroundColor: gradientFill,
+            borderWidth: 2,
+            data: [{% for value in volume_data_last7_days_values %}{{value}}, {% endfor %}],
+          },
+        ],
+      },
+      options: gradientChartOptionsConfigurationWithNumbersAndGrid,
+    });
+
+    var e = document
+      .getElementById("barChartSimpleGradientsNumbers")
+      .getContext("2d");
+
+    gradientFill = ctx.createLinearGradient(0, 170, 0, 50);
+    gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
+    gradientFill.addColorStop(1, hexToRGB("#2CA8FF", 0.6));
+
+    var a = {
+      type: "bar",
+      data: {
+        labels: [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December",
+        ],
+        datasets: [
+          {
+            label: "Active Countries",
+            backgroundColor: gradientFill,
+            borderColor: "#2CA8FF",
+            pointBorderColor: "#FFF",
+            pointBackgroundColor: "#2CA8FF",
+            pointBorderWidth: 2,
+            pointHoverRadius: 4,
+            pointHoverBorderWidth: 1,
+            pointRadius: 4,
+            fill: true,
+            borderWidth: 1,
+            data: [80, 99, 86, 96, 123, 85, 100, 75, 88, 90, 123, 155],
+          },
+        ],
+      },
+      options: {
+        maintainAspectRatio: false,
+        legend: {
+          display: false,
+        },
+        tooltips: {
+          bodySpacing: 4,
+          mode: "nearest",
+          intersect: 0,
+          position: "nearest",
+          xPadding: 10,
+          yPadding: 10,
+          caretPadding: 10,
+        },
+        responsive: 1,
+        scales: {
+          yAxes: [
+            {
+              gridLines: 0,
+              gridLines: {
+                zeroLineColor: "transparent",
+                drawBorder: false,
+              },
+            },
+          ],
+          xAxes: [
+            {
+              display: 0,
+              gridLines: 0,
+              ticks: {
+                display: false,
+              },
+              gridLines: {
+                zeroLineColor: "transparent",
+                drawTicks: false,
+                display: false,
+                drawBorder: false,
+              },
+            },
+          ],
+        },
+        layout: {
+          padding: {
+            left: 0,
+            right: 0,
+            top: 15,
+            bottom: 15,
+          },
+        },
+      },
+    };
+
+    var viewsChart = new Chart(e, a);
+  },
+};
+    $(document).ready(function () {
+      // Javascript method's body can be found in assets/js/demos.js
+      demo.initDashboardPageCharts();
+
+    });
+  </script>
 {% endblock %}

@@ -1,6 +1,5 @@
 web
 -----------------
-fleet optimization
 waste collection statistics at each STS and Landfill site
 capcha
 realtime vehicle tracking
