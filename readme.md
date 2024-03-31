@@ -7,18 +7,15 @@
 
 ## Getting started
 
-### Build Docker file
-
-- `docker-compose build`
-
 ### To start project, run:
 
-- `docker-compose up`
+- `docker-compose up --build`
 
 The API will then be available at [http://127.0.0.1:8000](http://127.0.0.1:8000).
 
 ### Celery
 
+- Note: Here For each command open a new terminal and run each server
 - `docker-compose run app sh -c "celery -A core worker -l INFO"`
 - `docker-compose run app sh -c "celery -A core beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler"`
 
@@ -27,25 +24,4 @@ The API will then be available at [http://127.0.0.1:8000](http://127.0.0.1:8000)
 - `docker-compose run --rm app sh -c "python manage.py start_periodic_tasks"`
 - `docker-compose run --rm app sh -c "python manage.py load_initial_waste_db"`
 - `docker-compose run --rm app sh -c "python manage.py load_initial_auth_db"`
-- `docker-compose run --rm app sh -c "python manage.py load_some_waste_transfer"`
-
----
-
-## Development Guide
-
-### Create Project
-
-- `docker-compose run app sh -c "django-admin startproject app ."`
-
-### Create New App
-
-- `docker-compose run --rm app sh -c "python manage.py startapp core"`
-- `docker-compose run --rm app sh -c "python manage.py startapp waste"`
-
-### Create Super User
-
-- `docker-compose run --rm app sh -c "python manage.py createsuperuser"`
-
-### Make Migrations
-
-- `docker-compose run app sh -c "python manage.py makemigrations"`
+- `docker-compose run --rm app sh -c "python manage.py load_some_waste_transfer"` (optional)
