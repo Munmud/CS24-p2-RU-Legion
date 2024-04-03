@@ -20,8 +20,8 @@
       <div class="col-md-6">
         <div class="card card-chart">
           <div class="card-header">
-            <h5 class="card-category">Potholes Reports</h5>
-            <h4 class="card-title">Potholes</h4>
+            <h5 class="card-category">Last 7 Days</h5>
+            <h4 class="card-title">Fuel Cost</h4>
           </div>
           <div class="card-body">
             <div class="chart-area">
@@ -38,8 +38,8 @@
       <div class="col-md-6">
         <div class="card card-chart">
           <div class="card-header">
-            <h5 class="card-category">Garbage Reports</h5>
-            <h4 class="card-title">Garbage</h4>
+            <h5 class="card-category">Last 7 Days</h5>
+            <h4 class="card-title">Garbage Transfer</h4>
           </div>
           <div class="card-body">
             <div class="chart-area">
@@ -502,23 +502,10 @@ demo = {
       type: "line",
       responsive: true,
       data: {
-        labels: [
-          "Jan",
-          "Feb",
-          "Mar",
-          "Apr",
-          "May",
-          "Jun",
-          "Jul",
-          "Aug",
-          "Sep",
-          "Oct",
-          "Nov",
-          "Dec",
-        ],
+        labels: [{% for value in fuel_cost_data_last7_days_keys %}"{{value|date:"m"}}-{{value|date:"d"}}", {% endfor %}],
         datasets: [
           {
-            label: "Active Users",
+            label: "Tk",
             borderColor: "#f96332",
             pointBorderColor: "#FFF",
             pointBackgroundColor: "#f96332",
@@ -529,7 +516,7 @@ demo = {
             fill: true,
             backgroundColor: gradientFill,
             borderWidth: 2,
-            data: [542, 480, 430, 550, 530, 453, 380, 434, 568, 610, 700, 630],
+            data: [{% for value in fuel_cost_data_last7_days_values %}{{value}}, {% endfor %}],
           },
         ],
       },
@@ -551,11 +538,11 @@ demo = {
     myChart = new Chart(ctx, {
       type: "line",
       responsive: true,
-      data: {
-        labels: ["12pm,", "3pm", "6pm", "9pm", "12am", "3am", "6am", "9am"],
+      data: { 
+        labels: [{% for value in volume_data_last7_days_values %}{{value|date:"Y-m-d H:i:s"}}, {% endfor %}],
         datasets: [
           {
-            label: "Email Stats",
+            label: "tons",
             borderColor: "#18ce0f",
             pointBorderColor: "#FFF",
             pointBackgroundColor: "#18ce0f",
@@ -566,7 +553,7 @@ demo = {
             fill: true,
             backgroundColor: gradientFill,
             borderWidth: 2,
-            data: [40, 500, 650, 700, 1200, 1250, 1300, 1900],
+            data: [{% for value in volume_data_last7_days_values %}{{value}}, {% endfor %}],
           },
         ],
       },

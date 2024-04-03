@@ -12,6 +12,10 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from waste.models import *
 from .utils import is_sts_manager, is_system_admin, is_landfill_manager
 from .utils import aws_map_route_api
+from report.views import (
+    generate_waste_transfer_volume_data_last_7_days,
+    generate_waste_transfer_fuel_cost_data_last_7_days
+)
 
 
 def dashboard(request):
@@ -20,10 +24,17 @@ def dashboard(request):
         landfill_list = Landfill.objects.all()
         ongoing_waste_transfers = WasteTransfer.objects.exclude(
             status='Completed').order_by('-id').all()
+        volume_data_last7_days_keys, volume_data_last7_days_values = generate_waste_transfer_volume_data_last_7_days()
+
+        fuel_cost_data_last7_days_keys, fuel_cost_data_last7_days_values = generate_waste_transfer_fuel_cost_data_last_7_days()
         return render(request, 'system_admin/dashboard.html', {
             'sts_list': sts_list,
             'landfill_list': landfill_list,
-            'ongoing_waste_transfers': ongoing_waste_transfers
+            'ongoing_waste_transfers': ongoing_waste_transfers,
+            'volume_data_last7_days_keys': volume_data_last7_days_keys,
+            'volume_data_last7_days_values': volume_data_last7_days_values,
+            'fuel_cost_data_last7_days_keys': fuel_cost_data_last7_days_keys,
+            'fuel_cost_data_last7_days_values': fuel_cost_data_last7_days_values,
         })
 
     elif is_sts_manager(request.user):

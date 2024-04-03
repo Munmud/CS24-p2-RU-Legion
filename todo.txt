@@ -1,6 +1,5 @@
 web
 -----------------
-Daily fuel cost statistics for the trucks
 fleet optimization
 waste collection statistics at each STS and Landfill site
 capcha

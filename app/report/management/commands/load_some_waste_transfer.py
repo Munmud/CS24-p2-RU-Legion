@@ -7,7 +7,7 @@ from django.conf import settings
 
 import random
 from datetime import datetime, timedelta
-
+from django.utils import timezone
 from report.tasks import schedule_task
 from waste.models import STS, Landfill, STSManager, LandfillManager, WasteTransfer, Vehicle, Path
 
@@ -16,7 +16,7 @@ USER_USER2 = 'user2'
 USER_ADMIN = 'admin'
 PASSWORD = 'pass'
 
-end_date = datetime.now() - timedelta(days=1)
+end_date = timezone.now() - timedelta(days=1)
 start_date = end_date - timedelta(days=7)
 
 
@@ -37,7 +37,8 @@ class Command(BaseCommand):
         print(f'Added {USER_USER2} as landfill manager')
 
         for date in (start_date + timedelta(n) for n in range(8)):
-            for i in range(10):
+            tot = random.randint(5, 10)
+            for i in range(tot):
                 vehicle = Vehicle.objects.all().order_by('?').first()
                 volume = vehicle.capacity-1
                 path = Path.objects.filter(
