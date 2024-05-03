@@ -6,6 +6,7 @@ from django.urls import re_path
 
 from authentication import views as auth_app
 from waste import views as waste_app
+from web_project.views import SystemView
 from .views import dashboard
 
 urlpatterns = [
@@ -64,3 +65,11 @@ urlpatterns = [
 # if settings.DEBUG:
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+handler404 = SystemView.as_view(
+    template_name="pages_misc_error.html", status=404)
+handler400 = SystemView.as_view(
+    template_name="pages_misc_error.html", status=400)
+handler500 = SystemView.as_view(
+    template_name="pages_misc_error.html", status=500)

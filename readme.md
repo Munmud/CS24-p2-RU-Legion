@@ -7,19 +7,19 @@
 
 ## Getting started
 
-### To start project, run:
+### Step-1 : To start project, install docker and from command line run:
 
 - `docker-compose up --build`
 
 The API will then be available at [http://127.0.0.1:8000](http://127.0.0.1:8000).
 
-### Celery
+### Step 2 : Celery
 
 - Note: Here For each command open a new terminal and run each server
 - `docker-compose run app sh -c "celery -A core worker -l INFO"`
 - `docker-compose run app sh -c "celery -A core beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler"`
 
-### Load Initial Data
+### Step 3 : Load Initial Data (For running first time)
 
 - `docker-compose run --rm app sh -c "python manage.py start_periodic_tasks"`
 - `docker-compose run --rm app sh -c "python manage.py load_initial_waste_db"`

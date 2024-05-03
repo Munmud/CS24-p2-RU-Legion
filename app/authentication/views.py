@@ -10,6 +10,8 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
 from captcha.fields import CaptchaField
+from web_project import TemplateLayout
+from web_project.template_helpers.theme import TemplateHelper
 
 from core.utils import is_system_admin
 from .tasks import send_forget_password_mail
@@ -44,7 +46,12 @@ def user_login(request):
         return redirect('dashboard')
     else:
         form = CaptchaLoginForm()
-    return render(request, 'common/login.html', {'form': form})
+
+    context = context = TemplateLayout.init(request, {'form': form})
+    context.update({
+        "layout_path": TemplateHelper.set_layout("layout_blank.html", context),
+    })
+    return render(request, 'common/login.html', context)
 
 
 def user_logout(request):
@@ -109,7 +116,12 @@ def ForgetPassword(request):
 
     except Exception as e:
         print(e)
-    return render(request, 'forget-password.html')
+
+    context = context = TemplateLayout.init(request, {})
+    context.update({
+        "layout_path": TemplateHelper.set_layout("layout_blank.html", context),
+    })
+    return render(request, 'forget-password.html', context)
 
 
 @login_required

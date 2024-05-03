@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+{% load poll_extras %} {% load static %}
+<html lang="en" class="light-style layout-menu-fixed" dir="ltr" data-theme="theme-default" data-assets-path="{% static 'assets/' %}" data-template="vertical-menu-template-free">
+  <head>
+    {% include 'base_elements/head_tag.html' %}
+    {% block head %}
+
+    {% endblock %}
+  </head>
+
+  <body>
+    <!-- Content -->
+    {% block content %}
+
+    {% endblock %}
+    <!-- / Content -->
+
+    <!-- Footer -->
+    {% include 'base_elements/footer.html' %}
+    <!-- / Footer -->
+
+    <!-- Core JS -->
+    {% include 'base_elements/core_js.html' %}
+    {% block js %}
+
+    {% endblock %}
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+  </body>
+</html>

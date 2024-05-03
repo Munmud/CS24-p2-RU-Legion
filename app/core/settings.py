@@ -1,6 +1,8 @@
 from pathlib import Path
 import os
 
+from .template import THEME_LAYOUT_DIR, THEME_VARIABLES
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -18,7 +20,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+ENVIRONMENT = "local"
 # Application definition
 
 INSTALLED_APPS = [
@@ -38,6 +40,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -51,19 +54,29 @@ ROOT_URLCONF = 'core.urls'
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [BASE_DIR / "templates"],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+                "core.context_processors.my_setting",
+                "core.context_processors.environment",
+            ],
+            "libraries": {
+                "theme": "web_project.template_tags.theme",
+            },
+            "builtins": [
+                "django.templatetags.static",
+                "web_project.template_tags.theme",
             ],
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
@@ -152,3 +165,7 @@ EMAIL_HOST_USER = 'moontasir042@gmail.com'  # Your email address
 EMAIL_HOST_PASSWORD = 'sutz opho plfu nbvv'  # Your email password
 
 FUEL_COST_PER_LITRE = 120
+
+
+THEME_LAYOUT_DIR = THEME_LAYOUT_DIR
+THEME_VARIABLES = THEME_VARIABLES

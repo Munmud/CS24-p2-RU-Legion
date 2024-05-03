@@ -1,49 +1,84 @@
 {% load poll_extras %} {% load static %}
-<div class="sidebar-wrapper" id="sidebar-wrapper">
-  <ul class="nav">
-    <li class="active">
-      {% if user.is_authenticated %}
-        <a href="{% url 'dashboard' %}">
-          <i class="now-ui-icons design_app"></i>
-          <p>Dashboard</p>
-        </a>
-        {% if request.user|has_group:'System Admin' %}
-          <a href="/admin" style="margin-top: 10px;">
-            <i class="fa fa-cogs"></i>
-            <p>Admin Dashboard</p>
-          </a>
-        {% endif %}
-        {% if request.user|has_group:'STS Manager' %}
-          <a href="{% url 'waste_transfer_start' %}" style="margin-top: 10px;">
-            <i class="fa fa-truck"></i>
-            <p>Transfer Waste</p>
-          </a>
-          <a href="{% url 'create_fleet_step_1' %}" style="margin-top: 10px;">
-            <i class="fa fa-truck"></i><i class="fa fa-truck"></i>
-            <p>Create Fleet</p>
-          </a>
-        {% endif %}
+<nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
+  <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
+    <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)"><i class="bx bx-menu bx-sm"></i></a>
+  </div>
 
-        <a href="{% url 'update_profile' %}" style="margin-top: 10px;">
-          <i class="fas fa-user-edit"></i>
-          <p>Update Profile</p>
-        </a>
+  <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
+    <!-- Search -->
+    <div class="navbar-nav align-items-center">
+      <div class="nav-item d-flex align-items-center">
+        <i class="bx bx-search fs-4 lh-0"></i>
+        <input type="text" class="form-control border-0 shadow-none" placeholder="Search..." aria-label="Search..." />
+      </div>
+    </div>
+    <!-- /Search -->
 
-        <a href="{% url 'change_user_password' %}" style="margin-top: 10px;">
-          <i class="now-ui-icons ui-1_lock-circle-open"></i>
-          <p>Change Password</p>
-        </a>
+    <ul class="navbar-nav flex-row align-items-center ms-auto">
+      <!-- Place this tag where you want the button to render. -->
+      <li class="nav-item lh-1 me-3">
+        <a class="github-button" href="https://github.com/themeselection/sneat-html-admin-template-free" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star themeselection/sneat-html-admin-template-free on GitHub">Star</a>
+      </li>
 
-        <a href="{% url 'logout' %}" style="margin-top: 10px;">
-          <i class="now-ui-icons media-1_button-power"></i>
-          <p>Logout</p>
+      <!-- User -->
+      <li class="nav-item navbar-dropdown dropdown-user dropdown">
+        <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+          <div class="avatar avatar-online">
+            <img src="{% static 'assets/img/avatars/1.png' %}" alt class="w-px-40 h-auto rounded-circle" />
+          </div>
         </a>
-      {% else %}
-        <a href="{% url 'login' %}" style="margin-top: 10px;">
-          <i class="now-ui-icons users_single-02"></i>
-          <p>Login</p>
-        </a>
-      {% endif %}
-    </li>
-  </ul>
-</div>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li>
+            <a class="dropdown-item" href="#">
+              <div class="d-flex">
+                <div class="flex-shrink-0 me-3">
+                  <div class="avatar avatar-online">
+                    <img src="{% static 'assets/img/avatars/1.png' %}" alt class="w-px-40 h-auto rounded-circle" />
+                  </div>
+                </div>
+                <div class="flex-grow-1">
+                  <span class="fw-semibold d-block">John Doe</span>
+                  <small class="text-muted">Admin</small>
+                </div>
+              </div>
+            </a>
+          </li>
+          <li>
+            <div class="dropdown-divider"></div>
+          </li>
+          <li>
+            <a class="dropdown-item" href="#">
+              <i class="bx bx-user me-2"></i>
+              <span class="align-middle">My Profile</span>
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="#">
+              <i class="bx bx-cog me-2"></i>
+              <span class="align-middle">Settings</span>
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="#">
+              <span class="d-flex align-items-center align-middle">
+                <i class="flex-shrink-0 bx bx-credit-card me-2"></i>
+                <span class="flex-grow-1 align-middle">Billing</span>
+                <span class="flex-shrink-0 badge badge-center rounded-pill bg-danger w-px-20 h-px-20">4</span>
+              </span>
+            </a>
+          </li>
+          <li>
+            <div class="dropdown-divider"></div>
+          </li>
+          <li>
+            <a class="dropdown-item" href="auth-login-basic.html">
+              <i class="bx bx-power-off me-2"></i>
+              <span class="align-middle">Log Out</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+      <!-- / User -->
+    </ul>
+  </div>
+</nav>
